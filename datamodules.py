@@ -10,7 +10,8 @@ default_transform = transforms.Compose(
 
 
 class CIFAR10DataModule(LightningDataModule):
-    def __init__(self, data_dir="./data", batch_size=64, num_workers=6, train_transform = default_transform, test_transform = default_transform):
+    def __init__(self, data_dir="./data", batch_size=64, num_workers=6,
+                  train_transform = default_transform, test_transform = default_transform):
         super().__init__()
         self.data_dir = data_dir
         self.batch_size = batch_size

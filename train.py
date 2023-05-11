@@ -11,19 +11,20 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
 from torchvision import transforms
+from torchvision.models import ResNet18_Weights, resnet18
 # from torchvision.datasets import CIFAR10
 import wandb
 from argparse import ArgumentParser
-from IPython.core.display import HTML, display
+from IPython.core.display import display_html
+from IPython.display import display
 import lightning as L
 from datamodules import CIFAR10DataModule
-from pl_bolts.transforms.dataset_normalizations import cifar10_normalization
-from pytorch_lightning import LightningModule, Trainer, seed_everything
-from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint, EarlyStopping, BackboneFinetuning, GradientAccumulationScheduler, StochasticWeightAveraging
+from lightning.pytorch import LightningModule, Trainer, seed_everything
+from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint, EarlyStopping, BackboneFinetuning, GradientAccumulationScheduler, StochasticWeightAveraging
+from lightning.pytorch.callbacks.progress import TQDMProgressBar
 from lightning.pytorch.tuner.tuning import Tuner
 from finetuning_scheduler import FinetuningScheduler
-from pytorch_lightning.callbacks.progress import TQDMProgressBar
-from pytorch_lightning.loggers import WandbLogger
+from lightning.pytorch.loggers import WandbLogger
 import torch.optim as optim
 from torch.optim.lr_scheduler import OneCycleLR
 from torchmetrics.functional import accuracy
@@ -34,6 +35,7 @@ from torchmetrics.functional import accuracy
 # from urllib.error import HTTPError
 # from PIL import Image
 
+wandb.login(key='b3518f13f1b3184b76d233e2f2b1f7cbef587a1f') 
 matplotlib_inline.backend_inline.set_matplotlib_formats("svg",
                                                         "pdf")  # For export
 matplotlib.rcParams["lines.linewidth"] = 2.0
@@ -61,17 +63,15 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))  # main folder name
 PATH_DATASETS = os.path.join(CURRENT_DIR, "data/")
 CHECKPOINT_PATH = os.path.join(CURRENT_DIR, "checkpoints/")
 
-device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device(
-    "cpu")
+device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
 # BATCH_SIZE = 256 if torch.cuda.is_available() else 64
-wandb_logger = WandbLogger(project="CIFAR10", log_model="all")
+wandb_logger = WandbLogger(project="CIFAR10", log_model="all", save_dir=CHECKPOINT_PATH)
 
 train_transforms = transforms.Compose([
     transforms.RandomCrop(32, padding=4),
     transforms.RandomHorizontalFlip(),
     transforms.ToTensor(),
-    cifar10_normalization(),
-])
+    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
 # transform = A.Compose([
 #     A.RandomCrop(width=256, height=256),
@@ -81,23 +81,26 @@ train_transforms = transforms.Compose([
 
 test_transforms = transforms.Compose([
     transforms.ToTensor(),
-    cifar10_normalization(),
+    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
 ])
 
 cifar10_dm = CIFAR10DataModule(
     data_dir=PATH_DATASETS,
     batch_size=args.batch_size,
     num_workers=int(os.cpu_count() / 2),
-    train_transforms=train_transforms,
-    test_transforms=test_transforms,
+    train_transform=train_transforms,
+    test_transform=test_transforms
 )
 
 
 def create_model():
     # pre-trained on ImageNet
-    model = torchvision.models.resnet18(pretrained=True, num_classes=10)
-    # model.conv1 = nn.Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
-    # model.maxpool = nn.Identity()
+    num_classes = 10
+    model = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
+    # model = torchvision.models.resnet18(pretrained=True, num_classes=10)
+    model.conv1 = nn.Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+    model.maxpool = nn.Identity()
+    model.fc = nn.Linear(512, num_classes)
     return model
 
 
@@ -191,7 +194,7 @@ trainer = Trainer(
     0.5,  # clip gradients' global norm to <=0.5 using gradient_clip_algorithm='norm' by default
     devices=1
     if torch.cuda.is_available() else None,  # limiting got iPython runs
-    logger=wandb_logger(save_dir=CHECKPOINT_PATH),
+    logger=wandb_logger,
     # api_key: b3518f13f1b3184b76d233e2f2b1f7cbef587a1f
     # logger=CSVLogger(save_dir="logs/"),
     callbacks=callbacks,
