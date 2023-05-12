@@ -15,7 +15,22 @@ This is a repository for the final project of MSDM5055 about applying image clas
     - [x] Learning Rate Finder: tuner.lr_find(model)
   - [ ] Fine-tune Scheduler 
 - [ ] Data Augmentation
-- [ ] 
+
+
+
+## Usage
+
+## Run in Colab
+https://medium.com/analytics-vidhya/how-to-use-google-colab-with-github-via-google-drive-68efb23a42d
+
+to be continued...
+1. Open the notebook in Colab: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/LucaJiang/PyTorch_ImageClassifiction_Techniques/blob/main/PyTorch_ImageClassifiction_Techniques.ipynb)
+2. 
+
+
+
+
+
 
 
 ## Reference
