@@ -21,6 +21,6 @@ This is a repository for the final project of MSDM5055 about applying image clas
 ## Reference
 Write down all your references here. 
 1. PyTorch Lightning: https://lightning.ai/docs/pytorch/stable/
-1. PyTorch Lightning CIFAR-10: https://lightning.ai/docs/pytorch/stable/notebooks/lightning_examples/cifar10-baseline.html
-1. Training tricks: https://lightning.ai/docs/pytorch/stable/advanced/training_tricks.html
-1. 
+2. PyTorch Lightning CIFAR-10: https://lightning.ai/docs/pytorch/stable/notebooks/lightning_examples/cifar10-baseline.html
+3. Training tricks: https://lightning.ai/docs/pytorch/stable/advanced/training_tricks.html
+4. Graph Attention: https://www.baeldung.com/cs/graph-attention-networks
