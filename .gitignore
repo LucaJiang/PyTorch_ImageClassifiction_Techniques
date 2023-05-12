@@ -1,7 +1,7 @@
 # add by jiangwx
 wandb/
 data/cifar-10-*
-.lr_find_*
+checkpoints/
 
 # Created automatically
 # Byte-compiled / optimized / DLL files
