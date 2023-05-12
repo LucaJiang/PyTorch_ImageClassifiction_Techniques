@@ -1,4 +1,8 @@
+# add by jiangwx
 wandb/
+data/cifar-10-*
+
+# Created automatically
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

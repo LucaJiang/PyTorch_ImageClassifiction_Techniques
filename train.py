@@ -26,8 +26,9 @@ from lightning.pytorch.tuner.tuning import Tuner
 from finetuning_scheduler import FinetuningScheduler
 from lightning.pytorch.loggers import WandbLogger
 import torch.optim as optim
-from torch.optim.lr_scheduler import OneCycleLR
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torchmetrics.functional import accuracy
+import warnings
 # import albumentations as A
 
 # import urllib.request
@@ -35,43 +36,50 @@ from torchmetrics.functional import accuracy
 # from urllib.error import HTTPError
 # from PIL import Image
 
-wandb.login(key='b3518f13f1b3184b76d233e2f2b1f7cbef587a1f') 
-matplotlib_inline.backend_inline.set_matplotlib_formats("svg",
-                                                        "pdf")  # For export
-matplotlib.rcParams["lines.linewidth"] = 2.0
-sns.reset_orig()
+warnings.filterwarnings("ignore")
+
+#* wandb settings
+# wandb.login(key='b3518f13f1b3184b76d233e2f2b1f7cbef587a1f')
+wandb.init(anonymous="allow")
+
+# matplotlib_inline.backend_inline.set_matplotlib_formats("svg",
+#                                                         "pdf")  # For export
+# matplotlib.rcParams["lines.linewidth"] = 2.0
+# sns.reset_orig()
 
 parser = ArgumentParser()
 parser.add_argument('--epochs',
                     default=200,
                     type=int,
                     help='max epochs set in Trainer')
-parser.add_argument('--batch_size', default=50, type=int)
+parser.add_argument('--batch_size', default=64, type=int)
 parser.add_argument("--lr", type=float, default=0.05)
 parser.add_argument("--weight_decay", type=float, default=1e-3)
 # parser.add_argument("--name", type=str, default="ResNet18")
-
 args = parser.parse_args()
-
-seed_everything(42)
 
 # Ensure that all operations are deterministic on GPU (if used) for reproducibility
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
+seed_everything(42)
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))  # main folder name
 PATH_DATASETS = os.path.join(CURRENT_DIR, "data/")
 CHECKPOINT_PATH = os.path.join(CURRENT_DIR, "checkpoints/")
 
-device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
+device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device(
+    "cpu")
 # BATCH_SIZE = 256 if torch.cuda.is_available() else 64
-wandb_logger = WandbLogger(project="CIFAR10", log_model="all", save_dir=CHECKPOINT_PATH)
+wandb_logger = WandbLogger(project="CIFAR10",
+                           log_model="all",
+                           save_dir=CHECKPOINT_PATH)
 
 train_transforms = transforms.Compose([
     transforms.RandomCrop(32, padding=4),
     transforms.RandomHorizontalFlip(),
     transforms.ToTensor(),
-    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+])
 
 # transform = A.Compose([
 #     A.RandomCrop(width=256, height=256),
@@ -79,18 +87,26 @@ train_transforms = transforms.Compose([
 #     A.RandomBrightnessContrast(p=0.2),
 # ])
 
+# test_transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(DATA_MEANS, DATA_STD)])
+# # For training, we add some augmentation. Networks are too powerful and would overfit.
+# train_transform = transforms.Compose(
+#     [
+#         transforms.RandomHorizontalFlip(),
+#         transforms.RandomResizedCrop((32, 32), scale=(0.8, 1.0), ratio=(0.9, 1.1)),
+#         transforms.ToTensor(),
+#         transforms.Normalize(DATA_MEANS, DATA_STD),
+#     ]
+# )
+
 test_transforms = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
 ])
 
-cifar10_dm = CIFAR10DataModule(
-    data_dir=PATH_DATASETS,
-    batch_size=args.batch_size,
-    num_workers=int(os.cpu_count() / 2),
-    train_transform=train_transforms,
-    test_transform=test_transforms
-)
+cifar10_dm = CIFAR10DataModule(data_dir=PATH_DATASETS,
+                               batch_size=args.batch_size,
+                               train_transform=train_transforms,
+                               test_transform=test_transforms)
 
 
 def create_model():
@@ -98,7 +114,12 @@ def create_model():
     num_classes = 10
     model = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
     # model = torchvision.models.resnet18(pretrained=True, num_classes=10)
-    model.conv1 = nn.Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+    model.conv1 = nn.Conv2d(3,
+                            64,
+                            kernel_size=(3, 3),
+                            stride=(1, 1),
+                            padding=(1, 1),
+                            bias=False)
     model.maxpool = nn.Identity()
     model.fc = nn.Linear(512, num_classes)
     return model
@@ -106,12 +127,20 @@ def create_model():
 
 class LitResnet(LightningModule):
 
-    def __init__(self, lr=args.lr, weight_decay=args.weight_decay, **kwargs):
+    def __init__(self,
+                 lr=args.lr,
+                 weight_decay=args.weight_decay,
+                 batch_size=args.batch_size,
+                 **kwargs):
         super().__init__(**kwargs)
         self.hparams.lr = lr
         self.hparams.weight_decay = weight_decay
+        self.hparams.batch_size = batch_size
         self.save_hyperparameters()  # auto by wandb
         self.model = create_model()
+
+        modules = list(self.model.children())[:-2]
+        self.backbone = nn.Sequential(*modules)
 
     def forward(self, x):
         out = self.model(x)
@@ -141,6 +170,21 @@ class LitResnet(LightningModule):
     def test_step(self, batch, batch_idx):
         self.evaluate(batch, "test")
 
+    # def configure_optimizers(self):
+    #     # We will support Adam or SGD as optimizers.
+    #     if self.hparams.optimizer_name == "Adam":
+    #         # AdamW is Adam with a correct implementation of weight decay (see here
+    #         # for details: https://arxiv.org/pdf/1711.05101.pdf)
+    #         optimizer = optim.AdamW(self.parameters(), **self.hparams.optimizer_hparams)
+    #     elif self.hparams.optimizer_name == "SGD":
+    #         optimizer = optim.SGD(self.parameters(), **self.hparams.optimizer_hparams)
+    #     else:
+    #         assert False, f'Unknown optimizer: "{self.hparams.optimizer_name}"'
+
+    #     # We will reduce the learning rate by 0.1 after 100 and 150 epochs
+    #     scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[100, 150], gamma=0.1)
+    #     return [optimizer], [scheduler]
+
     def configure_optimizers(self):
         optimizer = torch.optim.SGD(
             self.parameters(),
@@ -148,19 +192,17 @@ class LitResnet(LightningModule):
             momentum=0.9,
             weight_decay=self.hparams.weight_decay,
         )
-        steps_per_epoch = 5000 // self.hparams.batch_size
-        scheduler_dict = {
-            "scheduler":
-            OneCycleLR(
-                optimizer,
-                0.1,
-                epochs=self.trainer.max_epochs,
-                steps_per_epoch=steps_per_epoch,
-            ),
-            "interval":
-            "step",
+        # only allow ['LambdaLR', 'MultiplicativeLR', 'StepLR', 'MultiStepLR', 'ExponentialLR', 'CosineAnnealingLR', 'ReduceLROnPlateau', 'CosineAnnealingWarmRestarts', 'ConstantLR', 'LinearLR']
+        scheduler = ReduceLROnPlateau(optimizer,
+                                      mode="min",
+                                      factor=0.2,
+                                      patience=20,
+                                      min_lr=5e-5)
+        return {
+            "optimizer": optimizer,
+            "lr_scheduler": scheduler,
+            "monitor": "val_loss"
         }
-        return {"optimizer": optimizer, "lr_scheduler": scheduler_dict}
 
 
 model = LitResnet()
@@ -184,32 +226,54 @@ callbacks = [
     }),
     TQDMProgressBar(refresh_rate=10),
     early_stopping,
-    BackboneFinetuning(10, lambda epoch: 0.1 * (0.5**(epoch // 10))),
-    FinetuningScheduler(),
+    # BackboneFinetuning(10, lambda epoch: 0.1 * (0.5**(epoch // 10))),
+    # https://lightning.ai/docs/pytorch/stable/notebooks/lightning_examples/finetuning-scheduler.html?highlight=fine%20tuning%20schedule%20provided#
+    # FinetuningScheduler(gen_ft_sched_only=True),
 ]
 trainer = Trainer(
     max_epochs=args.epochs,
     accelerator="auto",
-    gradient_clip_val=
-    0.5,  # clip gradients' global norm to <=0.5 using gradient_clip_algorithm='norm' by default
-    devices=1
-    if torch.cuda.is_available() else None,  # limiting got iPython runs
+    # clip gradients' global norm to <=0.5 using gradient_clip_algorithm='norm' by default
+    gradient_clip_val=0.5,
+    # accumulate gradients every k batches as per the scheduling dict
+    # accumulate_grad_batches=8,
+    # auto_scale_batch_size="binsearch",
+    # auto_lr_find=True,
+    # auto_scale_batch_size="power",
+    # devices='auto', # default
     logger=wandb_logger,
-    # api_key: b3518f13f1b3184b76d233e2f2b1f7cbef587a1f
     # logger=CSVLogger(save_dir="logs/"),
     callbacks=callbacks,
 )
 tuner = Tuner(trainer)
+
+# ERROR: self._internal_optimizer_metadata[opt_idx]KeyError: 0
 #* Auto-scale batch size by growing it exponentially (default)
-tuner.scale_batch_size(model, mode="power")
+# tuner.scale_batch_size(model, mode="power")
 #* Auto-scale batch size with binary search
 # tuner.scale_batch_size(model, mode="binsearch")
 
 #* finds learning rate automatically
 # sets hparams.lr or hparams.learning_rate to that learning rate
 tuner.lr_find(model)
+# Run learning rate finder
+# lr_finder = tuner.lr_find(model)
 
-trainer.fit(model, cifar10_dm)
+# # Results can be found in
+# print(lr_finder.results)
+
+# # Plot with
+# fig = lr_finder.plot(suggest=True)
+# fig.show()
+
+# # Pick point based on plot, or get suggestion
+# new_lr = lr_finder.suggestion()
+
+# # update hparams of the model
+# model.hparams.lr = new_lr
+
+trainer.fit(model, datamodule=cifar10_dm)
+trainer.save_checkpoint(CHECKPOINT_PATH + os.sep + "model.ckpt")
 trainer.test(model, datamodule=cifar10_dm)
 
 # trainer.fit(model, ckpt_path="path/to/checkpoint.ckpt")
