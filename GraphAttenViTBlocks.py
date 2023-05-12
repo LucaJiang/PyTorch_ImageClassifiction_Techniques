@@ -72,6 +72,45 @@ class Conv2dEmbed(nn.Module):
         # X : (batch, nodes, features)
         return X
     
+class GViTEncoder(nn.Module):
+    def __init__(self,infeats,hidfeats,outfeats,heads=8,dropout=0.1,activation=nn.LeakyReLU()):
+        """
+        Graph Attention ViT Encoder layer
+        -------------------------------
+        ## Arguments:
+        - infeats : input features
+        - hidfeats : hidden features
+        - outfeats : output features
+        - heads : number of heads
+        - dropout : dropout rate
+        - activation : activation function
+        -------------------------------
+        ## Shape:
+        - input shape : (batch, nodes, infeats)
+        - output shape : (batch, nodes, outfeats + hidfeats * heads + infeats)
+        """
+        super().__init__()
+        self.norm = nn.LayerNorm()
+        self.mhga = MultiHeadGraphAtten(infeats,hidfeats,heads,dropout,activation)
+        self.mlp = nn.Linear(hidfeats * heads + infeats,outfeats)
+        self.activation = activation
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self,X):
+        # X : (batch, nodes, infeats)
+        H = self.norm(X)
+        H = self.mhga(H)
+        # H : (batch, nodes, hidfeats * heads)
+        H = torch.concat([H,X],dim=2)
+        # H : (batch, nodes, hidfeats * heads + infeats)
+        O = self.norm(H)
+        O = self.mlp(O)
+        O = self.dropout(self.activation(O))
+        # O : (batch, nodes, outfeats)
+        O = torch.concat([O,H],dim=2)
+        # O : (batch, nodes, outfeats + hidfeats * heads + infeats)
+        return O
+
 if __name__ == "__main__":
     X = torch.randn(10,3,32,32)
     embedding = Conv2dEmbed(3,6,patch_size=8)
