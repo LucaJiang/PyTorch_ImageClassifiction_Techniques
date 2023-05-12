@@ -28,18 +28,13 @@ from lightning.pytorch.loggers import WandbLogger
 import torch.optim as optim
 from torch.optim.lr_scheduler import OneCycleLR
 from torchmetrics.functional import accuracy
+from GraphAttenViTBlocks import *
 # import albumentations as A
 
 # import urllib.request
 # from types import SimpleNamespace
 # from urllib.error import HTTPError
 # from PIL import Image
-
-wandb.login(key='b3518f13f1b3184b76d233e2f2b1f7cbef587a1f') 
-matplotlib_inline.backend_inline.set_matplotlib_formats("svg",
-                                                        "pdf")  # For export
-matplotlib.rcParams["lines.linewidth"] = 2.0
-sns.reset_orig()
 
 parser = ArgumentParser()
 parser.add_argument('--epochs',
@@ -49,9 +44,17 @@ parser.add_argument('--epochs',
 parser.add_argument('--batch_size', default=50, type=int)
 parser.add_argument("--lr", type=float, default=0.05)
 parser.add_argument("--weight_decay", type=float, default=1e-3)
+parser.add_argument("--model_type", type=str, default="ResNet18")
+parser.add_argument("--key", type=str, default="b3518f13f1b3184b76d233e2f2b1f7cbef587a1f")
 # parser.add_argument("--name", type=str, default="ResNet18")
 
 args = parser.parse_args()
+
+wandb.login(key=args.key) 
+matplotlib_inline.backend_inline.set_matplotlib_formats("svg",
+                                                        "pdf")  # For export
+matplotlib.rcParams["lines.linewidth"] = 2.0
+sns.reset_orig()
 
 seed_everything(42)
 
@@ -93,25 +96,44 @@ cifar10_dm = CIFAR10DataModule(
 )
 
 
-def create_model():
+def create_model(model_type=args.model_type, embed_feats=64, **kwargs):
     # pre-trained on ImageNet
     num_classes = 10
-    model = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
+    backbone = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
     # model = torchvision.models.resnet18(pretrained=True, num_classes=10)
-    model.conv1 = nn.Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
-    model.maxpool = nn.Identity()
-    model.fc = nn.Linear(512, num_classes)
-    return model
+    backbone.conv1 = nn.Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+    backbone.maxpool = nn.Identity()
+    if model_type == "ResNet18":
+        backbone.fc = nn.Linear(512, num_classes)
+        return backbone
+    if model_type == "ResViT18":
+        backbone.avgpool = nn.Identity()
+        backbone.fc = nn.Identity()
+        backbone.layer3 = nn.Identity()
+        backbone.layer4 = nn.Identity()
+        model = nn.Sequential(
+            backbone,
+            nn.Unflatten(1, (128, 16, 16)),
+            Conv2dEmbed(128,embed_feats,patch_size=4,width=16,height=16),
+            GViTEncoder(embed_feats,64,64,heads=8),
+            # shape: (batch_size, nodes=16, feats=64+64*8+64=640)
+            nn.Flatten(1),
+            # shape: (batch_size, nodes=16*640=10240)
+            nn.Linear(10240, num_classes)
+        )
+        return model
+    raise ValueError(f"Unknown model type {model_type}")
 
 
 class LitResnet(LightningModule):
 
-    def __init__(self, lr=args.lr, weight_decay=args.weight_decay, **kwargs):
+    def __init__(self, lr=args.lr, weight_decay=args.weight_decay, model_type=args.model_type, **kwargs):
         super().__init__(**kwargs)
         self.hparams.lr = lr
         self.hparams.weight_decay = weight_decay
+        self.hparams.model_type = model_type
         self.save_hyperparameters()  # auto by wandb
-        self.model = create_model()
+        self.model = create_model(model_type, **kwargs)
 
     def forward(self, x):
         out = self.model(x)
