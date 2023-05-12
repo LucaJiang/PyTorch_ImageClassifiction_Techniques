@@ -31,21 +31,21 @@ class MultiHeadGraphAtten(nn.Module):
         # X : (batch, nodes, infeats)
         V = self.v_transform(X)
         # V : (batch, nodes, outfeats)
-        Q = self.q_transform(V).transpose(1,2)
-        # Q : (batch, heads, nodes)
-        K = self.k_transform(V).transpose(1,2)
-        # K : (batch, heads, nodes)
-        A = self.activation(torch.einsum("bhi,bhj->bhij",Q,K))
-        # A : (batch, heads, nodes, nodes)
+        Q = self.q_transform(V)
+        # Q : (batch, nodes, heads)
+        K = self.k_transform(V)
+        # K : (batch, nodes, heads)
+        A = self.activation(torch.einsum("bih,bjh->bijh",Q,K))
+        # A : (batch, nodes, nodes, heads)
         A = self.doprout(self.softmax(A))
-        H = torch.einsum("bhij,bjf->bihf",A,V)
+        H = torch.einsum("bijh,bjf->bihf",A,V)
         # H : (batch, nodes, heads, outfeats)
         O = torch.flatten(H,2)
         # O : (batch, nodes, heads * outfeats)
         return O
     
 class Conv2dEmbed(nn.Module):
-    def __init__(self,chans,feats,patch_size=1):
+    def __init__(self,chans,feats,patch_size=1,height=None,width=None):
         """
         Conv2d Embedding layer
         -------------------------------
@@ -53,6 +53,8 @@ class Conv2dEmbed(nn.Module):
         - chans : number of input channels
         - feats : number of output features
         - patch_size : patch size
+        - height : height of input image
+        - width : width of input image
         -------------------------------
         ## Shape:
         - input shape : (batch, channels, height, width)
@@ -60,16 +62,20 @@ class Conv2dEmbed(nn.Module):
         """
         super().__init__()
         self.conv = nn.Conv2d(chans,feats,kernel_size=patch_size,stride=patch_size)
-        self.flatten = nn.Flatten(2)
+        nodes = (height // patch_size) * (width // patch_size)
+        self.position_embeddings = nn.Parameter(torch.zeros(1, nodes, feats))
+        # the position embeddings are learnable parameters
+        # self.position_embeddings : (1, nodes, features)
 
     def forward(self,X):
         # X : (batch, channels, height, width)
         X = self.conv(X)
         # X : (batch, features, height // patch_size, width // patch_size)
-        X = self.flatten(X)
+        X = torch.flatten(X,2)
         # X : (batch, features, nodes)
         X = torch.transpose(X,1,2)
         # X : (batch, nodes, features)
+        X += self.position_embeddings
         return X
     
 class GViTEncoder(nn.Module):
@@ -113,7 +119,7 @@ class GViTEncoder(nn.Module):
 
 if __name__ == "__main__":
     X = torch.randn(10,3,32,32)
-    embedding = Conv2dEmbed(3,6,patch_size=8)
+    embedding = Conv2dEmbed(3,6,patch_size=8,width=32,height=32)
     gal = MultiHeadGraphAtten(6,16,heads=8)
     X = embedding(X)
     assert X.shape == (10,16,6)
