@@ -1,0 +1,124 @@
+0:
+  params:
+  - model.fc.bias
+  - model.fc.weight
+1:
+  params:
+  - model.layer4.1.bn2.bias
+  - model.layer4.1.bn2.weight
+2:
+  params:
+  - model.layer4.1.conv2.weight
+  - model.layer4.1.bn1.bias
+3:
+  params:
+  - model.layer4.1.bn1.weight
+  - model.layer4.1.conv1.weight
+4:
+  params:
+  - model.layer4.0.downsample.1.bias
+  - model.layer4.0.downsample.1.weight
+5:
+  params:
+  - model.layer4.0.downsample.0.weight
+  - model.layer4.0.bn2.bias
+6:
+  params:
+  - model.layer4.0.bn2.weight
+  - model.layer4.0.conv2.weight
+7:
+  params:
+  - model.layer4.0.bn1.bias
+  - model.layer4.0.bn1.weight
+8:
+  params:
+  - model.layer4.0.conv1.weight
+  - model.layer3.1.bn2.bias
+9:
+  params:
+  - model.layer3.1.bn2.weight
+  - model.layer3.1.conv2.weight
+10:
+  params:
+  - model.layer3.1.bn1.bias
+  - model.layer3.1.bn1.weight
+11:
+  params:
+  - model.layer3.1.conv1.weight
+  - model.layer3.0.downsample.1.bias
+12:
+  params:
+  - model.layer3.0.downsample.1.weight
+  - model.layer3.0.downsample.0.weight
+13:
+  params:
+  - model.layer3.0.bn2.bias
+  - model.layer3.0.bn2.weight
+14:
+  params:
+  - model.layer3.0.conv2.weight
+  - model.layer3.0.bn1.bias
+15:
+  params:
+  - model.layer3.0.bn1.weight
+  - model.layer3.0.conv1.weight
+16:
+  params:
+  - model.layer2.1.bn2.bias
+  - model.layer2.1.bn2.weight
+17:
+  params:
+  - model.layer2.1.conv2.weight
+  - model.layer2.1.bn1.bias
+18:
+  params:
+  - model.layer2.1.bn1.weight
+  - model.layer2.1.conv1.weight
+19:
+  params:
+  - model.layer2.0.downsample.1.bias
+  - model.layer2.0.downsample.1.weight
+20:
+  params:
+  - model.layer2.0.downsample.0.weight
+  - model.layer2.0.bn2.bias
+21:
+  params:
+  - model.layer2.0.bn2.weight
+  - model.layer2.0.conv2.weight
+22:
+  params:
+  - model.layer2.0.bn1.bias
+  - model.layer2.0.bn1.weight
+23:
+  params:
+  - model.layer2.0.conv1.weight
+  - model.layer1.1.bn2.bias
+24:
+  params:
+  - model.layer1.1.bn2.weight
+  - model.layer1.1.conv2.weight
+25:
+  params:
+  - model.layer1.1.bn1.bias
+  - model.layer1.1.bn1.weight
+26:
+  params:
+  - model.layer1.1.conv1.weight
+  - model.layer1.0.bn2.bias
+27:
+  params:
+  - model.layer1.0.bn2.weight
+  - model.layer1.0.conv2.weight
+28:
+  params:
+  - model.layer1.0.bn1.bias
+  - model.layer1.0.bn1.weight
+29:
+  params:
+  - model.layer1.0.conv1.weight
+  - model.bn1.bias
+30:
+  params:
+  - model.bn1.weight
+  - model.conv1.weight
