@@ -24,7 +24,6 @@ class MultiHeadGraphAtten(nn.Module):
         self.q_transform = nn.Linear(outfeats//heads,heads)
         self.k_transform = nn.Linear(outfeats//heads,heads)
         self.doprout = nn.Dropout(dropout)
-        self.softmax = nn.Softmax(dim=-1)
         self.activation = activation
 
     def forward(self, X):
@@ -37,7 +36,7 @@ class MultiHeadGraphAtten(nn.Module):
         # K : (batch, heads, nodes, 1)
         A = self.activation(Q.transpose(-1,-2)+K)
         # A : (batch, heads, nodes, nodes)
-        A = self.doprout(self.softmax(A))
+        A = self.doprout(torch.softmax(A,dim=-1))
         H = torch.einsum("bhij,bjf->bihf",A,V)
         # H : (batch, nodes, heads, outfeats//heads)
         O = torch.flatten(H,2)
@@ -72,7 +71,6 @@ class MultiHeadAtten(nn.Module):
 
         self.doprout = nn.Dropout(dropout)
         self.activation = activation
-        self.softmax = nn.Softmax(dim=-1)
 
     def forward(self,X):
         # X : (batch, nodes, infeats)
@@ -81,10 +79,10 @@ class MultiHeadAtten(nn.Module):
         Q = self.heads_unflatten(self.q_transform(X))
         K = self.heads_unflatten(self.k_transform(X))
         # Q,K : (batch, nodes, heads, outfeats//heads)
-        A = torch.einsum("bihf,bjhf->bijh",Q,K)/self.sqrt_d
-        # A : (batch, nodes, nodes, heads)
-        A = self.softmax(A)
-        H = torch.einsum("bijh,bjf->bihf",A,V)
+        A = torch.einsum("bihf,bjhf->bhij",Q,K)/self.sqrt_d
+        # A : (batch, heads, nodes, nodes)
+        A = torch.softmax(A,dim=-1)
+        H = torch.einsum("bhij,bjf->bihf",A,V)
         # H : (batch, nodes, heads, outfeats//heads)
         O = torch.flatten(H,2)
         # O : (batch, nodes, outfeats)
