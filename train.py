@@ -57,6 +57,7 @@ parser.add_argument('--batch_size', default=64, type=int)
 parser.add_argument("--lr", type=float, default=0.05)
 parser.add_argument("--weight_decay", type=float, default=1e-3)
 parser.add_argument("--model_type", type=str, default="ResNet18")
+parser.add_argument("--patience", type=int, default=3)
 # parser.add_argument("--name", type=str, default="ResNet18")
 args = parser.parse_args()
 
@@ -111,7 +112,7 @@ cifar10_dm = CIFAR10DataModule(data_dir=PATH_DATASETS,
                                test_transform=test_transforms)
 
 
-def create_model(model_type=args.model_type, embed_feats=64, **kwargs):
+def create_model(model_type=args.model_type, embed_feats=256, **kwargs):
     # pre-trained on ImageNet
     num_classes = 10
     backbone = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
@@ -124,17 +125,16 @@ def create_model(model_type=args.model_type, embed_feats=64, **kwargs):
     if model_type == "ResViT18":
         backbone.avgpool = nn.Identity()
         backbone.fc = nn.Identity()
-        backbone.layer3 = nn.Identity()
         backbone.layer4 = nn.Identity()
         model = nn.Sequential(
             backbone,
-            nn.Unflatten(1, (128, 16, 16)),
-            Conv2dEmbed(128,embed_feats,patch_size=4,width=16,height=16),
-            GViTEncoder(embed_feats,64,64,heads=8),
-            # shape: (batch_size, nodes=16, feats=64+64*8+64=640)
+            nn.Unflatten(1, (256, 8, 8)),
+            Conv2dEmbed(256,embed_feats,patch_size=4,width=8,height=8),
+            GViTEncoder(embed_feats,256,256,heads=4),
+            # shape: (batch_size, nodes=4, feats=256+256*4+256=2560)
             nn.Flatten(1),
-            # shape: (batch_size, nodes=16*640=10240)
-            nn.Linear(10240, num_classes)
+            # shape: (batch_size, nodes=4*2560=10240)
+            nn.LazyLinear(num_classes)
         )
         return model
     raise ValueError(f"Unknown model type {model_type}")
@@ -170,7 +170,7 @@ class LitResnet(LightningModule):
         logits = self(x)
         loss = F.nll_loss(logits, y)
         preds = torch.argmax(logits, dim=1)
-        acc = accuracy(preds, y)
+        acc = accuracy(preds, y, task="multiclass", num_classes=10)
 
         if stage:
             self.log(f"{stage}_loss", loss, prog_bar=True)
@@ -220,7 +220,7 @@ class LitResnet(LightningModule):
 model = LitResnet()
 
 early_stopping = EarlyStopping('val_loss',
-                               patience=3,
+                               patience=args.patience,
                                verbose=True,
                                mode='min')
 
@@ -257,7 +257,7 @@ trainer = Trainer(
     # logger=CSVLogger(save_dir="logs/"),
     callbacks=callbacks,
 )
-tuner = Tuner(trainer)
+# tuner = Tuner(trainer)
 
 # ERROR: self._internal_optimizer_metadata[opt_idx]KeyError: 0
 #* Auto-scale batch size by growing it exponentially (default)
@@ -267,7 +267,7 @@ tuner = Tuner(trainer)
 
 #* finds learning rate automatically
 # sets hparams.lr or hparams.learning_rate to that learning rate
-tuner.lr_find(model)
+# tuner.lr_find(model)
 # Run learning rate finder
 # lr_finder = tuner.lr_find(model)
 
