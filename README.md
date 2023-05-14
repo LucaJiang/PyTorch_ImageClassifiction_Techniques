@@ -3,10 +3,21 @@
 For MSDM5055: A survey on deep learning image classification technics based on PyTorch and PyTorch lightning
 
 - [PyTorch\_ImageClassifiction\_Techniques](#pytorch_imageclassifiction_techniques)
+  - [Slices contents:](#slices-contents)
   - [Introduction](#introduction)
   - [Features](#features)
   - [Run in Colab](#run-in-colab)
   - [Reference](#reference)
+
+
+## Slices contents:
+Done:
+- [x] why we use lightning and compare with pytorch
+- [x] training tricks
+todo: 
+- [ ] GAN
+- [ ] ...
+- [ ] usage of colab and git: it's part of DL ability
 
 
 ## Introduction
