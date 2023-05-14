@@ -17,33 +17,77 @@ class MultiHeadGraphAtten(nn.Module):
         ## Shape:
 
         - input shape : (batch, nodes, infeats)
-        - output shape : (batch, nodes, heads * outfeats)
-    """
+        - output shape : (batch, nodes, outfeats)
+        """
         super().__init__()
-        self.v_transform = nn.Linear(infeats,outfeats)
-        self.q_transform = nn.Linear(outfeats,heads)
-        self.k_transform = nn.Linear(outfeats,heads)
+        self.v_transform = nn.Linear(infeats,outfeats//heads)
+        self.q_transform = nn.Linear(outfeats//heads,heads)
+        self.k_transform = nn.Linear(outfeats//heads,heads)
         self.doprout = nn.Dropout(dropout)
-        self.softmax = nn.Softmax(dim=3)
         self.activation = activation
 
     def forward(self, X):
         # X : (batch, nodes, infeats)
         V = self.v_transform(X)
-        # V : (batch, nodes, outfeats)
-        Q = self.q_transform(V)
-        # Q : (batch, nodes, heads)
-        K = self.k_transform(V)
-        # K : (batch, nodes, heads)
-        A = self.activation(torch.einsum("bih,bjh->bijh",Q,K))
-        # A : (batch, nodes, nodes, heads)
-        A = self.doprout(self.softmax(A))
-        H = torch.einsum("bijh,bjf->bihf",A,V)
-        # H : (batch, nodes, heads, outfeats)
+        # V : (batch, nodes, outfeats//heads)
+        Q = self.q_transform(V).transpose(1,2)[...,None]
+        # Q : (batch, heads, nodes, 1)
+        K = self.k_transform(V).transpose(1,2)[...,None]
+        # K : (batch, heads, nodes, 1)
+        A = self.activation(Q.transpose(-1,-2)+K)
+        # A : (batch, heads, nodes, nodes)
+        A = self.doprout(torch.softmax(A,dim=-1))
+        H = torch.einsum("bhij,bjf->bihf",A,V)
+        # H : (batch, nodes, heads, outfeats//heads)
         O = torch.flatten(H,2)
-        # O : (batch, nodes, heads * outfeats)
+        # O : (batch, nodes, outfeats)
         return O
     
+class MultiHeadAtten(nn.Module):
+    def __init__(self,infeats,outfeats,heads=8,dropout=0.1,activation=nn.LeakyReLU()):
+        """
+        Multi-Head Classical Attention layer
+        -------------------------------
+        ## Arguments:
+
+        - infeats : input features
+        - outfeats : output features
+        - heads : number of heads
+        - dropout : dropout rate
+        - activation : activation function
+        -------------------------------
+        ## Shape:
+
+        - input shape : (batch, nodes, infeats)
+        - output shape : (batch, nodes, heads * outfeats)
+        """
+        super().__init__()
+        self.sqrt_d = (outfeats//heads)**0.5
+
+        self.heads_unflatten = nn.Unflatten(2,(heads,outfeats//heads))
+        self.v_transform = nn.Linear(infeats,outfeats//heads)
+        self.q_transform = nn.Linear(infeats,outfeats)
+        self.k_transform = nn.Linear(infeats,outfeats)
+
+        self.doprout = nn.Dropout(dropout)
+        self.activation = activation
+
+    def forward(self,X):
+        # X : (batch, nodes, infeats)
+        V = self.activation(self.v_transform(X))
+        # V : (batch, nodes, outfeats//heads)
+        Q = self.heads_unflatten(self.q_transform(X))
+        K = self.heads_unflatten(self.k_transform(X))
+        # Q,K : (batch, nodes, heads, outfeats//heads)
+        A = torch.einsum("bihf,bjhf->bhij",Q,K)/self.sqrt_d
+        # A : (batch, heads, nodes, nodes)
+        A = torch.softmax(A,dim=-1)
+        H = torch.einsum("bhij,bjf->bihf",A,V)
+        # H : (batch, nodes, heads, outfeats//heads)
+        O = torch.flatten(H,2)
+        # O : (batch, nodes, outfeats)
+        return self.doprout(O)
+
 class Conv2dEmbed(nn.Module):
     def __init__(self,chans,feats,patch_size=1,height=None,width=None):
         """
@@ -79,14 +123,12 @@ class Conv2dEmbed(nn.Module):
         return X
     
 class GViTEncoder(nn.Module):
-    def __init__(self,infeats,hidfeats,outfeats,heads=8,dropout=0.1,activation=nn.LeakyReLU()):
+    def __init__(self,feats,hidden=None,heads=8,dropout=0.1,activation=nn.GELU(),attention=MultiHeadGraphAtten):
         """
         Graph Attention ViT Encoder layer
         -------------------------------
         ## Arguments:
-        - infeats : input features
-        - hidfeats : hidden features
-        - outfeats : output features
+        - feats : input features
         - heads : number of heads
         - dropout : dropout rate
         - activation : activation function
@@ -96,33 +138,37 @@ class GViTEncoder(nn.Module):
         - output shape : (batch, nodes, outfeats + hidfeats * heads + infeats)
         """
         super().__init__()
-        self.norm = nn.LayerNorm()
-        self.mhga = MultiHeadGraphAtten(infeats,hidfeats,heads,dropout,activation)
-        self.mlp = nn.Linear(hidfeats * heads + infeats,outfeats)
-        self.activation = activation
+        hidden = hidden or feats
+        self.norm1 = nn.LayerNorm(feats)
+        self.norm2 = nn.LayerNorm(feats)
+        self.msa = attention(feats,feats,heads,dropout,activation)
+        self.mlp = nn.Sequential(
+            nn.Linear(feats, hidden),
+            activation,
+            nn.Dropout(dropout),
+            nn.Linear(hidden, feats),
+            activation,
+            nn.Dropout(dropout)
+        )
         self.dropout = nn.Dropout(dropout)
 
     def forward(self,X):
-        # X : (batch, nodes, infeats)
-        H = self.norm(X)
-        H = self.mhga(H)
-        # H : (batch, nodes, hidfeats * heads)
-        H = torch.concat([H,X],dim=2)
-        # H : (batch, nodes, hidfeats * heads + infeats)
-        O = self.norm(H)
-        O = self.mlp(O)
-        O = self.dropout(self.activation(O))
-        # O : (batch, nodes, outfeats)
-        O = torch.concat([O,H],dim=2)
-        # O : (batch, nodes, outfeats + hidfeats * heads + infeats)
-        return O
+        # X : (batch, nodes, feats)
+        X = self.msa(self.norm1(X)) + X
+        return self.mlp(self.norm2(X)) + X
 
 if __name__ == "__main__":
     X = torch.randn(10,3,32,32)
-    embedding = Conv2dEmbed(3,6,patch_size=8,width=32,height=32)
-    gal = MultiHeadGraphAtten(6,16,heads=8)
-    X = embedding(X)
-    assert X.shape == (10,16,6)
-    X = gal(X)
-    assert X.shape == (10,16,128)
+    embedding = Conv2dEmbed(3,16,patch_size=8,width=32,height=32)
+    gal = MultiHeadGraphAtten(16,16,heads=8)
+    al = MultiHeadAtten(16,16,heads=8)
+    encoder = GViTEncoder(16,heads=4)
+    H = embedding(X)
+    assert H.shape == (10,16,16)
+    Y = gal(H)
+    assert Y.shape == (10,16,16)
+    Y = al(H)
+    assert Y.shape == (10,16,16)
+    Y = encoder(H)
+    assert Y.shape == (10,16,16)
     print("shape test pass")

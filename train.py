@@ -24,6 +24,7 @@ from lightning.pytorch.loggers import WandbLogger
 import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau, OneCycleLR
 from torchmetrics.functional import accuracy
+from GraphAttenViTBlocks import *
 import warnings
 
 # import urllib.request
@@ -61,6 +62,8 @@ parser.add_argument('--model', default='resnet34', type=str, help='model')
 parser.add_argument('--batch_size', default=128, type=int)
 parser.add_argument("--lr", type=float, default=0.5)
 parser.add_argument("--weight_decay", type=float, default=1e-3)
+parser.add_argument("--model_type", type=str, default="ResNet18")
+parser.add_argument("--patience", type=int, default=3)
 parser.add_argument("--num_classes", type=int, default=10)
 # parser.add_argument("--name", type=str, default="ResNet18")
 args = parser.parse_args()
@@ -95,36 +98,43 @@ cifar10_dm = CIFAR10DataModule(data_dir=PATH_DATASETS,
                                test_transform=test_transforms)
 
 
-def create_model():
+def create_model(embed_feats=512, **kwargs):
     # pre-trained on ImageNet
-    if args.model == 'resnet18':
-        model = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
+    if "34" in args.model:
+        backbone = resnet34(weights=ResNet34_Weights.IMAGENET1K_V1)
     else:
-        model = resnet34(weights=ResNet34_Weights.IMAGENET1K_V1)
-    model.conv1 = nn.Conv2d(3,
-                            64,
-                            kernel_size=(3, 3),
-                            stride=(1, 1),
-                            padding=(1, 1),
-                            bias=False)
-    model.maxpool = nn.Identity()
-    model.fc = nn.Linear(512, args.num_classes)
-    return model
+        backbone = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
+    backbone.conv1 = nn.Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+    backbone.maxpool = nn.Identity()
+    if "resnet" in args.model:
+        backbone.fc = nn.Linear(512, args.num_classes)
+        return backbone
+    if args.model == "resvit18":
+        backbone.avgpool = nn.Identity()
+        backbone.fc = nn.Identity()
+        model = nn.Sequential(
+            backbone,
+            nn.Unflatten(1, (512, 4, 4)),
+            Conv2dEmbed(512,embed_feats,patch_size=2,width=4,height=4),
+            GViTEncoder(embed_feats,heads=8),
+            # shape: (batch_size, nodes=4, feats=512)
+            nn.Flatten(1),
+            # shape: (batch_size, nodes=4*512=2048)
+            nn.Linear(2048,args.num_classes)
+        )
+        return model
+    raise ValueError(f"Unknown model type {args.model}")
 
 
 class LitResnet(LightningModule):
 
-    def __init__(self,
-                 lr=args.lr,
-                 weight_decay=args.weight_decay,
-                 batch_size=args.batch_size,
-                 **kwargs):
+    def __init__(self, lr=args.lr, weight_decay=args.weight_decay, batch_size=args.batch_size, **kwargs):
         super().__init__(**kwargs)
         self.hparams.lr = lr
         self.hparams.weight_decay = weight_decay
         self.hparams.batch_size = batch_size
         self.save_hyperparameters()  # auto by wandb
-        self.model = create_model()
+        self.model = create_model(**kwargs)
 
     def forward(self, x):
         out = self.model(x)
@@ -207,7 +217,7 @@ class LitResnet(LightningModule):
 
 model = LitResnet()
 early_stopping = EarlyStopping('val_loss',
-                               patience=3,
+                               patience=args.patience,
                                verbose=True,
                                mode='min')
 
@@ -245,9 +255,9 @@ trainer = Trainer(
     logger=wandb_logger,
     callbacks=callbacks,
 )
-
 tuner = Tuner(trainer)
-# This will auto find biggest batch size that can fit into memory
+
+# ERROR: self._internal_optimizer_metadata[opt_idx]KeyError: 0
 #* Auto-scale batch size by growing it exponentially (default)
 # tuner.scale_batch_size(model, datamodule=cifar10_dm, mode="power")
 # * Auto-scale batch size with binary search
