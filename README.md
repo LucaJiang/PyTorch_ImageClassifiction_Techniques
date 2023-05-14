@@ -26,7 +26,7 @@ This is a repository for the final project of MSDM5055 about applying image clas
     - [x] Batch Size Finder: tuner.scale_batch_size(model, mode="power")
     - [x] Learning Rate Finder: tuner.lr_find(model)
   - [ ] Fine-tune Scheduler: debug
-- [ ] Data Augmentation: wait uncomment
+- [x] Data Augmentation: Cifar-10 generation with conditional diffusion model
 
 
 
@@ -56,3 +56,5 @@ Write down all your references here.
 2. PyTorch Lightning CIFAR-10: https://lightning.ai/docs/pytorch/stable/notebooks/lightning_examples/cifar10-baseline.html
 3. Training tricks: https://lightning.ai/docs/pytorch/stable/advanced/training_tricks.html
 4. Graph Attention: https://www.baeldung.com/cs/graph-attention-networks
+5. Diffusion Model:https://lilianweng.github.io/posts/2021-07-11-diffusion-models/#:~:text=Diffusion%20models%20are%20inspired%20by,data%20samples%20from%20the%20noise
+6. Cifar-10 Generation with Diffusion Model:https://github.com/zoubohao/DenoisingDiffusionProbabilityModel-ddpm-
