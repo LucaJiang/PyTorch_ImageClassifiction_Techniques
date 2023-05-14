@@ -22,3 +22,7 @@ sh generate.sh
 > For windows user, you can convert it into powershell script or bat file.
 
 If success, the presentation will be opened automatically in your browser. 
+
+## View online
+
+You can view the presentation online at https://lucajiang.github.io/PyTorch_ImageClassifiction_Techniques/slideshow/
