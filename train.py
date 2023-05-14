@@ -60,11 +60,12 @@ parser.add_argument('--epochs',
                     help='max epochs set in Trainer')
 parser.add_argument('--model', default='resnet34', type=str, help='model')
 parser.add_argument('--batch_size', default=128, type=int)
-parser.add_argument("--lr", type=float, default=0.5)
+parser.add_argument("--lr", type=float, default=0.1)
 parser.add_argument("--weight_decay", type=float, default=1e-3)
 parser.add_argument("--model_type", type=str, default="ResNet18")
 parser.add_argument("--patience", type=int, default=3)
 parser.add_argument("--num_classes", type=int, default=10)
+parser.add_argument("--use_checkpoint", type=str, default=None)
 # parser.add_argument("--name", type=str, default="ResNet18")
 args = parser.parse_args()
 
@@ -98,20 +99,25 @@ cifar10_dm = CIFAR10DataModule(data_dir=PATH_DATASETS,
                                test_transform=test_transforms)
 
 
-def create_model(embed_feats=512, **kwargs):
+def create_model(model_type=args.model,use_checkpoint=args.use_checkpoint,embed_feats=512, **kwargs):
     # pre-trained on ImageNet
-    if "34" in args.model:
+    if "34" in model_type:
         backbone = resnet34(weights=ResNet34_Weights.IMAGENET1K_V1)
     else:
         backbone = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
     backbone.conv1 = nn.Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
     backbone.maxpool = nn.Identity()
-    if "resnet" in args.model:
+    if "resnet" in model_type:
         backbone.fc = nn.Linear(512, args.num_classes)
         return backbone
-    if args.model == "resvit18":
+    if model_type == "resvit18":
         backbone.avgpool = nn.Identity()
         backbone.fc = nn.Identity()
+        if use_checkpoint is not None:
+            checkpoint = torch.load(use_checkpoint,map_location=lambda storage, loc: storage)
+            backbone.load_state_dict(checkpoint['state_dict'])
+            for param in backbone.parameters():
+                param.requires_grad = False
         model = nn.Sequential(
             backbone,
             nn.Unflatten(1, (512, 4, 4)),
@@ -123,18 +129,21 @@ def create_model(embed_feats=512, **kwargs):
             nn.Linear(2048,args.num_classes)
         )
         return model
-    raise ValueError(f"Unknown model type {args.model}")
+    raise ValueError(f"Unknown model type {model_type}")
 
 
 class LitResnet(LightningModule):
 
-    def __init__(self, lr=args.lr, weight_decay=args.weight_decay, batch_size=args.batch_size, **kwargs):
+    def __init__(self, 
+                 lr=args.lr, 
+                 weight_decay=args.weight_decay, 
+                 batch_size=args.batch_size, 
+                 model_type=args.model,
+                 use_checkpoint=args.use_checkpoint,
+                 **kwargs):
         super().__init__(**kwargs)
-        self.hparams.lr = lr
-        self.hparams.weight_decay = weight_decay
-        self.hparams.batch_size = batch_size
         self.save_hyperparameters()  # auto by wandb
-        self.model = create_model(**kwargs)
+        self.model = create_model(model_type=model_type,use_checkpoint=use_checkpoint,**kwargs)
 
     def forward(self, x):
         out = self.model(x)
@@ -145,7 +154,7 @@ class LitResnet(LightningModule):
         logits = self(x)
         loss = F.nll_loss(logits, y)
         # self.log("train_loss", loss)
-        wandb.log({"train_loss": loss})
+        self.log_dict({"train_loss": loss}, prog_bar=True, logger=True)
         return loss
 
     def evaluate(self, batch, stage=None):
@@ -158,8 +167,8 @@ class LitResnet(LightningModule):
                        task='multiclass',
                        num_classes=args.num_classes)
         if stage:
-            self.log(f"{stage}_loss", loss, on_step=False, on_epoch=True)
-            self.log(f"{stage}_acc", acc, on_step=False, on_epoch=True)
+            self.log(f"{stage}_loss", loss, prog_bar=True, logger=True)
+            self.log(f"{stage}_acc", acc, prog_bar=True, logger=True)
 
     def validation_step(self, batch, batch_idx):
         self.evaluate(batch, "val")
@@ -190,28 +199,28 @@ class LitResnet(LightningModule):
             weight_decay=self.hparams.weight_decay,
         )
         # allow ['LambdaLR', 'MultiplicativeLR', 'StepLR', 'MultiStepLR', 'ExponentialLR', 'CosineAnnealingLR', 'ReduceLROnPlateau', 'CosineAnnealingWarmRestarts', 'ConstantLR', 'LinearLR']
-        # scheduler = ReduceLROnPlateau(optimizer,
-        #                               mode="min",
-        #                               factor=0.2,
-        #                               patience=20,
-        #                               min_lr=5e-5)
-        # return {
-        #     "optimizer": optimizer,
-        #     "lr_scheduler": scheduler,
-        #     "monitor": "val_loss"
-        # }
-        steps_per_epoch = 45000 // self.hparams.batch_size
-        scheduler_dict = {
-            "scheduler":
-            OneCycleLR(
-                optimizer,
-                0.1,
-                epochs=self.trainer.max_epochs,
-                steps_per_epoch=steps_per_epoch,
-            ),
-            "interval":
-            "step",
+        scheduler = ReduceLROnPlateau(optimizer,
+                                      mode="min",
+                                      factor=0.2,
+                                      patience=6,
+                                      min_lr=5e-5)
+        return {
+            "optimizer": optimizer,
+            "lr_scheduler": scheduler,
+            "monitor": "val_loss"
         }
+        # steps_per_epoch = 45000 // self.hparams.batch_size
+        # scheduler_dict = {
+        #     "scheduler":
+        #     OneCycleLR(
+        #         optimizer,
+        #         0.1,
+        #         epochs=self.trainer.max_epochs,
+        #         steps_per_epoch=steps_per_epoch,
+        #     ),
+        #     "interval":
+        #     "step",
+        # }
         return {"optimizer": optimizer, "lr_scheduler": scheduler_dict}
 
 
@@ -247,7 +256,6 @@ trainer = Trainer(
     accelerator="auto",
     # clip gradients' global norm to <=0.5 using gradient_clip_algorithm='norm' by default
     gradient_clip_val=0.5,
-    check_val_every_n_epoch=5,
     # accumulate gradients every k batches as per the scheduling dict
     # accumulate_grad_batches=8,
     # auto_scale_batch_size="power",
@@ -255,27 +263,27 @@ trainer = Trainer(
     logger=wandb_logger,
     callbacks=callbacks,
 )
-tuner = Tuner(trainer)
+# tuner = Tuner(trainer)
 
-# ERROR: self._internal_optimizer_metadata[opt_idx]KeyError: 0
-#* Auto-scale batch size by growing it exponentially (default)
-# tuner.scale_batch_size(model, datamodule=cifar10_dm, mode="power")
-# * Auto-scale batch size with binary search
-# tuner.scale_batch_size(model, mode="binsearch")
+# # ERROR: self._internal_optimizer_metadata[opt_idx]KeyError: 0
+# #* Auto-scale batch size by growing it exponentially (default)
+# # tuner.scale_batch_size(model, datamodule=cifar10_dm, mode="power")
+# # * Auto-scale batch size with binary search
+# # tuner.scale_batch_size(model, mode="binsearch")
 
-#* finds learning rate automatically
-# sets hparams.lr or hparams.learning_rate to that learning rate
-# Run learning rate finder
-#! smaller num_training for faster build
-lr_finder = tuner.lr_find(model, datamodule=cifar10_dm, num_training=50)
-# Results can be found in
-plt.figure(figsize=(5, 5))
-lr_finder.plot(suggest=True)
-plt.savefig(os.path.join('img', "lr_finder.png"), dpi=300)
-# Pick point based on plot, or get suggestion
-new_lr = lr_finder.suggestion()
-if isinstance(new_lr, float):
-    model.hparams.lr = new_lr
+# #* finds learning rate automatically
+# # sets hparams.lr or hparams.learning_rate to that learning rate
+# # Run learning rate finder
+# #! smaller num_training for faster build
+# lr_finder = tuner.lr_find(model, datamodule=cifar10_dm, num_training=50)
+# # Results can be found in
+# plt.figure(figsize=(5, 5))
+# lr_finder.plot(suggest=True)
+# plt.savefig(os.path.join('img', "lr_finder.png"), dpi=300)
+# # Pick point based on plot, or get suggestion
+# new_lr = lr_finder.suggestion()
+# if isinstance(new_lr, float):
+#     model.hparams.lr = new_lr
 
 trainer.fit(model, datamodule=cifar10_dm)
 trainer.test(model, datamodule=cifar10_dm)
