@@ -23,7 +23,11 @@ This is a repository for the final project of MSDM5055 about applying image clas
     - [x] Batch Size Finder: tuner.scale_batch_size(model, mode="power")
     - [x] Learning Rate Finder: tuner.lr_find(model)
   - [ ] Fine-tune Scheduler: debug
+<<<<<<< HEAD
 - [x] Data Augmentation: torchvision.transform
+=======
+- [x] Data Augmentation: Cifar-10 generation with conditional diffusion model
+>>>>>>> 99d8617898db8d3df375ea2bc9b1a85db5ee68a6
 
 
 ## Run in Colab
