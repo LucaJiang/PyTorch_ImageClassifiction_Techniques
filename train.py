@@ -22,7 +22,6 @@ from lightning.pytorch.tuner.tuning import Tuner
 from finetuning_scheduler import FinetuningScheduler
 from lightning.pytorch.loggers import WandbLogger
 import torch.optim as optim
-from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torchmetrics.functional import accuracy
 from GraphAttenViTBlocks import *
 import warnings
@@ -46,8 +45,8 @@ SAVE_MODELS_PATH = os.path.join(CURRENT_DIR, "save_models/")
 LOGS_PATH = os.path.join(CURRENT_DIR, "logs/")
 
 #* wandb settings
+wandb.login(key='b3518f13f1b3184b76d233e2f2b1f7cbef587a1f')
 wandb.init(anonymous="allow", project="CIFAR10")
-# wandb.login(key='b3518f13f1b3184b76d233e2f2b1f7cbef587a1f')
 wandb_logger = WandbLogger(project="CIFAR10",
                            log_model="True",log_dataloader_frequency=-1,
                            save_dir=CHECKPOINT_PATH)
@@ -55,15 +54,15 @@ wandb_logger = WandbLogger(project="CIFAR10",
 parser = ArgumentParser()
 parser.add_argument('--dataset', default='cifar10', type=str, help='dataset')
 parser.add_argument('--epochs',
-                    default=200,
+                    default=50,
                     type=int,
                     help='max epochs set in Trainer')
 parser.add_argument('--model', default='resnet34', type=str, help='model')
-parser.add_argument('--batch_size', default=32, type=int)
-parser.add_argument("--lr", type=float, default=0.2)
+parser.add_argument('--batch_size', default=128, type=int)
+parser.add_argument("--lr", type=float, default=0.02)
 parser.add_argument("--weight_decay", type=float, default=1e-3)
 parser.add_argument("--model_type", type=str, default="ResNet18")
-parser.add_argument("--patience", type=int, default=30)
+parser.add_argument("--patience", type=int, default=8)
 parser.add_argument("--num_classes", type=int, default=10)
 # parser.add_argument("--name", type=str, default="ResNet18")
 args = parser.parse_args()
@@ -153,7 +152,7 @@ class LitResnet(LightningModule):
         x, y = batch
         logits = self(x)
         loss = F.nll_loss(logits, y)
-        self.log("train_loss", loss)
+        self.log("train_loss", loss, prog_bar=True, logger=True)
         wandb.log({"train_loss": loss})
         return loss
 
@@ -167,8 +166,8 @@ class LitResnet(LightningModule):
                        task='multiclass',
                        num_classes=args.num_classes)
         if stage:
-            self.log(f"{stage}_loss", loss)
-            self.log(f"{stage}_acc", acc)
+            self.log(f"{stage}_loss", loss, prog_bar=True, logger=True)
+            self.log(f"{stage}_acc", acc, prog_bar=True, logger=True)
             wandb.log({f"{stage}_loss": loss})
             wandb.log({f"{stage}_acc": acc})
 
@@ -189,11 +188,17 @@ class LitResnet(LightningModule):
         # allow ['LambdaLR', 'MultiplicativeLR', 'StepLR', 'MultiStepLR', 'ExponentialLR', 'CosineAnnealingLR', 'ReduceLROnPlateau', 'CosineAnnealingWarmRestarts', 'ConstantLR', 'LinearLR']
         # scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
         # scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[30,80], gamma=0.1)
-        scheduler = ReduceLROnPlateau(optimizer,
+        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer,
                                       mode="min",
                                       factor=0.1,
-                                      patience=10,
-                                      min_lr=5e-5)
+                                      patience=4,
+                                      min_lr=5e-8)
+        return {
+            "optimizer": optimizer,
+            "lr_scheduler": scheduler,
+            "monitor": "val_loss",
+            # 'frequency': 5
+        }
         # scheduler = {
         #     "scheduler":
         #     OneCycleLR(
@@ -204,15 +209,13 @@ class LitResnet(LightningModule):
         #     ),
         #     "interval": "step",
         # }
-        return {
-            "optimizer": optimizer,
-            "lr_scheduler": {
-                "scheduler": scheduler,
-                "monitor": "val_loss"
-            },
-            'interval': 'step',
-            'frequency': 5
-        }
+        # return {
+        #     "optimizer": optimizer,
+        #     "lr_scheduler": scheduler,
+        #     "monitor": "val_loss",
+        #     'interval': 'step',
+        #     'frequency': 5
+        # }
 
 
 model = LitResnet()
@@ -248,7 +251,7 @@ trainer = Trainer(
     accelerator="auto",
     # clip gradients' global norm to <=0.5 using gradient_clip_algorithm='norm' by default
     gradient_clip_val=0.5,
-    check_val_every_n_epoch=4,
+    # check_val_every_n_epoch=3,
     # accumulate gradients every k batches as per the scheduling dict
     # accumulate_grad_batches=8,
     # auto_scale_batch_size="power",
@@ -268,27 +271,26 @@ tuner = Tuner(trainer)
 # sets hparams.lr or hparams.learning_rate to that learning rate
 # Run learning rate finder
 #! smaller num_training for faster build
-lr_finder = tuner.lr_find(model, datamodule=cifar10_dm, num_training=50)
-# Results can be found in
-plt.figure(figsize=(5, 5))
-lr_finder.plot(suggest=True)
-plt.savefig(os.path.join('img', "lr_finder.png"), dpi=300)
-# Pick point based on plot, or get suggestion
-new_lr = lr_finder.suggestion()
-if isinstance(new_lr, float):
-    model.hparams.lr = new_lr
+# lr_finder = tuner.lr_find(model, datamodule=cifar10_dm, num_training=50)
+# # Results can be found in
+# plt.figure(figsize=(5, 5))
+# lr_finder.plot(suggest=True)
+# plt.savefig(os.path.join('img', "lr_finder.png"), dpi=300)
+# # Pick point based on plot, or get suggestion
+# new_lr = lr_finder.suggestion()
+# if isinstance(new_lr, float):
+#     model.hparams.lr = new_lr
 
 trainer.fit(model, datamodule=cifar10_dm)
 trainer.test(model, datamodule=cifar10_dm)
 
-# Save the best checkpoint
+# Save the best checkpoint and best model
 best_checkpoint = trainer.checkpoint_callback.best_model_path
-wandb.save(best_checkpoint, base_path=SAVE_MODELS_PATH)
-# save best model
 best_model = model.load_from_checkpoint(best_checkpoint)
+trainer.save_checkpoint(os.path.join(CHECKPOINT_PATH, 'best.ckpt'))
 torch.save(best_model.state_dict(),
            os.path.join(SAVE_MODELS_PATH, 'best_model.pt'))
-wandb.save('best_model.pt', base_path=SAVE_MODELS_PATH)
+
 # model = LitModel.load_from_checkpoint("path/to/checkpoint.ckpt")
 
 metrics = pd.read_csv(f"{trainer.logger.log_dir}/metrics.csv")
