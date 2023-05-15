@@ -20,4 +20,4 @@ Some generated images are showed below:
 
 * 2. DDPM + Classifier free guidence:
 
-![Generated Images with condition](https://github.com/zoubohao/DenoisingDiffusionProbabilityModel-ddpm-/blob/main/SampledImgs/SampledGuidenceImgs.png)
+![Generated Images with condition](https://github.com/LucaJiang/PyTorch_ImageClassifiction_Techniques/blob/master/Generation/SampledImgs/SampledGuidenceImgs.png)
