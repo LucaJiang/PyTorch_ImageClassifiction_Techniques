@@ -16,7 +16,7 @@ Some generated images are showed below:
 
 * 1. DDPM without guidence:
 
-![Generated Images without condition](https://github.com/zoubohao/DenoisingDiffusionProbabilityModel-ddpm-/blob/main/SampledImgs/SampledNoGuidenceImgs.png)
+![Generated Images without condition](https://github.com/LucaJiang/PyTorch_ImageClassifiction_Techniques/edit/master/Generation/Animation/animation.gif)
 
 * 2. DDPM + Classifier free guidence:
 
