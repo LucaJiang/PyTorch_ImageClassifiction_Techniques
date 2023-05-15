@@ -2,7 +2,7 @@
 wandb/
 data/cifar-10-*
 .lr_find_*
-save_models/
+saved_models/
 
 # Created automatically
 # Byte-compiled / optimized / DLL files
