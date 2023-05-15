@@ -14673,7 +14673,6 @@ div.jp-OutputPrompt {
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="Attention-Block">Attention Block<a class="anchor-link" href="#Attention-Block">&#182;</a></h2><p>In pratice, since the transformer becomes popular, many companies and researchers want to add attention block to their existed model in order to improve the performance. However, training a attention related model is computation consuming. One solution is that fix the weight of the pretrained model and only train the attention block.</p>
 <p>In this project, we add the attention block to the resnet18 model. Instead of using the traditional attention block, we use the graph attention block, inspired by the graph attention network, to extract the features from image spatches. And we follow the ViT structure to utilize the attention block.</p>
-<center>Fig. ViT Model Structure</center>
 <center><img src="https://assets-global.website-files.com/5d7b77b063a9066d83e1209c/639b1df59b5ec8f6e5fdb8cf_transformer%20gif.gif" style="zoom:30%;"></center>
 
 </div>
@@ -14706,7 +14705,7 @@ $$<p>where $\sigma$ represents for activation function.</p>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h3 id="Conv2d-Embedding">Conv2d Embedding<a class="anchor-link" href="#Conv2d-Embedding">&#182;</a></h3><p>In order to use the graph attention block, we should convert patches into feature vectors of nodes in the graph.
-In this project, we use the conv2d layer to convert instead of the flatten layer.</p>
+In this project, we use the <code>Conv2d</code> layer to convert instead of the <code>Flatten</code> layer.</p>
 <div class="highlight"><pre><span></span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">chans</span><span class="p">,</span><span class="n">feats</span><span class="p">,</span><span class="n">kernel_size</span><span class="o">=</span><span class="n">patch_size</span><span class="p">,</span><span class="n">stride</span><span class="o">=</span><span class="n">patch_size</span><span class="p">)</span>
 </pre></div>
 <p>Set the <code>kernel_size</code> and <code>stride_size</code> equal to <code>patch_size</code>.</p>
