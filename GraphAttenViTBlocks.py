@@ -23,7 +23,7 @@ class MultiHeadGraphAtten(nn.Module):
         self.v_transform = nn.Linear(infeats,outfeats//heads)
         self.q_transform = nn.Linear(outfeats//heads,heads)
         self.k_transform = nn.Linear(outfeats//heads,heads)
-        self.doprout = nn.Dropout(dropout)
+        self.dropout = nn.Dropout(dropout)
         self.activation = activation
 
     def forward(self, X):
@@ -36,7 +36,7 @@ class MultiHeadGraphAtten(nn.Module):
         # K : (batch, heads, nodes, 1)
         A = self.activation(Q.transpose(-1,-2)+K)
         # A : (batch, heads, nodes, nodes)
-        A = self.doprout(torch.softmax(A,dim=-1))
+        A = self.dropout(torch.softmax(A,dim=-1))
         H = torch.einsum("bhij,bjf->bihf",A,V)
         # H : (batch, nodes, heads, outfeats//heads)
         O = torch.flatten(H,2)
@@ -69,7 +69,7 @@ class MultiHeadAtten(nn.Module):
         self.q_transform = nn.Linear(infeats,outfeats)
         self.k_transform = nn.Linear(infeats,outfeats)
 
-        self.doprout = nn.Dropout(dropout)
+        self.dropout = nn.Dropout(dropout)
         self.activation = activation
 
     def forward(self,X):
@@ -81,12 +81,12 @@ class MultiHeadAtten(nn.Module):
         # Q,K : (batch, nodes, heads, outfeats//heads)
         A = torch.einsum("bihf,bjhf->bhij",Q,K)/self.sqrt_d
         # A : (batch, heads, nodes, nodes)
-        A = torch.softmax(A,dim=-1)
+        A = self.dropout(torch.softmax(A,dim=-1))
         H = torch.einsum("bhij,bjf->bihf",A,V)
         # H : (batch, nodes, heads, outfeats//heads)
         O = torch.flatten(H,2)
         # O : (batch, nodes, outfeats)
-        return self.doprout(O)
+        return O
 
 class Conv2dEmbed(nn.Module):
     def __init__(self,chans,feats,patch_size=1,height=None,width=None):
@@ -141,7 +141,7 @@ class GViTEncoder(nn.Module):
         hidden = hidden or feats
         self.norm1 = nn.LayerNorm(feats)
         self.norm2 = nn.LayerNorm(feats)
-        self.msa = attention(feats,feats,heads,dropout,activation)
+        self.msa = attention(feats,feats,heads=heads,dropout=dropout,activation=activation)
         self.mlp = nn.Sequential(
             nn.Linear(feats, hidden),
             activation,
