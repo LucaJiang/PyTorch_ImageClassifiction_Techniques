@@ -14,7 +14,7 @@ name = args.file_name.split('.')[0]
 
 with open(args.file_name) as f:
     text = f.read()
-    texts = re.split(r'-{4,}', text)
+    texts = re.split(r'-{4,}\n', text)
     prenb['cells'] = [nbf.v4.new_markdown_cell(text) for text in texts]
     for cell in prenb['cells']:
         cell.metadata = slidemeta

@@ -14685,13 +14685,53 @@ div.jp-OutputPrompt {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h3 id="Graph-Attention-Block">Graph Attention Block<a class="anchor-link" href="#Graph-Attention-Block">&#182;</a></h3><p>The graph attention block is shown in the following figure,</p>
-<center><img src="https://pic4.zhimg.com/v2-526634b065899482bbe9811af105ab73_b.jpg"></center>
-<center>Fig. Graph Attention Block</center>
-<p>Let $h_i$ be the input features for node $i$ and $W$ a learnable weight matrix. The self-attention mechanism computes the attention coefficients $\alpha_{ij}$ for each pair of nodes $i$ and $j$:</p>
+<h3 id="The-general-form-for-the-self-attention">The general form for the self-attention<a class="anchor-link" href="#The-general-form-for-the-self-attention">&#182;</a></h3><p>The general form for self-attention is as follows:</p>
 $$
+A_{ij}=f(h_i,h_j)
+$$<p>where $h_i$ and $h_j$ are the features for node $i$ and $j$, and $f$ is an arbitrary function that computes the attention score between two nodes.</p>
+<h3 id="The-classical-self-attention">The classical self-attention<a class="anchor-link" href="#The-classical-self-attention">&#182;</a></h3><p>The classical self-attention is computed as follows:</p>
+$$
+A=softmax\left(\frac{H^{\top}(Q^{\top}K)H}{\sqrt{d_k}}\right)
+$$<p>where $H\in\mathbb{R}^{f\times n}$ is the feature matrix for each embedding, $Q,K\in\mathbb{R}^{f^{'}\times f}$ are the query and key matrix for self-attention, and $d_k$ is the dimension of the key vector. Actually, it's just a bilinear function.</p>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Graph-Attention-Block">Graph Attention Block<a class="anchor-link" href="#Graph-Attention-Block">&#182;</a></h3><p>The graph attention block is shown in the following figure,</p>
+<center><img src="https://pic4.zhimg.com/v2-526634b065899482bbe9811af105ab73_b.jpg" style="zoom:.8"></center>
+<h4 id="The-formula-for-graph-attention">The formula for graph attention<a class="anchor-link" href="#The-formula-for-graph-attention">&#182;</a></h4>$$
 \alpha_{ij}=softmax(\sigma(W^{\top}[h_i||h_j]))
-$$<p>where $\sigma$ represents for activation function.</p>
+$$<p>where $W\in\mathbb{R}^{f\times 1}$ is the weight, $h_i\in \mathbb{R}^{f}$ is the feature of the $i^{th}$ node  and $\sigma$ represents for activation function.</p>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Graph-Attention-Block">Graph Attention Block<a class="anchor-link" href="#Graph-Attention-Block">&#182;</a></h3><p>Convert in this form, the attention matrix $A$ can be computed as follows:</p>
+$$
+A=softmax(\sigma(W_K^{\top}H+H^{\top}W_Q))
+$$<p>where $H\in\mathbb{R}^{f\times n}$ is the feature matrix of all nodes.</p>
+<p>Then we can implement the graph attention block in pytorch like this:</p>
+<div class="highlight"><pre><span></span><span class="n">Q</span> <span class="o">=</span> <span class="n">H</span> <span class="o">@</span> <span class="n">W_Q</span>
+<span class="c1"># Q : (batch, nodes, 1)</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">H</span> <span class="o">@</span> <span class="n">W_K</span>
+<span class="c1"># K : (batch, nodes, 1)</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">K</span><span class="p">),</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># A : (batch, nodes, nodes)</span>
+</pre></div>
 <!-- Comparing to the traditional attention block, the graph attention block is more flexible and uses less trainable parameter. -->
 
 </div>
@@ -14725,6 +14765,8 @@ In this project, we use the <code>Conv2d</code> layer to convert instead of the 
 <thead>
 <tr>
   <th style="text-align:center">Model</th>
+  <th style="text-align:center">Pretrained</th>
+  <th style="text-align:center">Attention</th>
   <th style="text-align:center">Epoch Consuming</th>
   <th style="text-align:center">Test Accuracy</th>
 </tr>
@@ -14732,21 +14774,29 @@ In this project, we use the <code>Conv2d</code> layer to convert instead of the 
 <tbody>
 <tr>
   <td style="text-align:center">Resnet18</td>
+  <td style="text-align:center"></td>
+  <td style="text-align:center"></td>
   <td style="text-align:center">50</td>
   <td style="text-align:center">0.926</td>
 </tr>
 <tr>
   <td style="text-align:center">Resnet18 + GraphAtten</td>
+  <td style="text-align:center"></td>
+  <td style="text-align:center">✔️</td>
   <td style="text-align:center">50</td>
   <td style="text-align:center">0.918</td>
 </tr>
 <tr>
-  <td style="text-align:center">Resnet18(pretrained) + GraphAtten</td>
+  <td style="text-align:center">Resnet18 |&gt; GraphAtten</td>
+  <td style="text-align:center">✔️</td>
+  <td style="text-align:center">✔️</td>
   <td style="text-align:center">5</td>
-  <td style="text-align:center">0.935</td>
+  <td style="text-align:center"><strong>0.935</strong></td>
 </tr>
 <tr>
-  <td style="text-align:center">Resnet18(pretrained) + ClassicAtten</td>
+  <td style="text-align:center">Resnet18 |&gt; ClassicAtten</td>
+  <td style="text-align:center">✔️</td>
+  <td style="text-align:center">✔️</td>
   <td style="text-align:center">5</td>
   <td style="text-align:center">0.931</td>
 </tr>
