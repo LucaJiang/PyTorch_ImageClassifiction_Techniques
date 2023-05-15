@@ -62,7 +62,8 @@ parser.add_argument('--model', default='resnet34', type=str, help='model')
 parser.add_argument('--batch_size', default=128, type=int)
 parser.add_argument("--lr", type=float, default=0.1)
 parser.add_argument("--weight_decay", type=float, default=1e-3)
-parser.add_argument("--model_type", type=str, default="ResNet18")
+parser.add_argument("--attention",type=str,default='graph')
+parser.add_argument("--dropout", type=float, default=0.1)
 parser.add_argument("--patience", type=int, default=3)
 parser.add_argument("--num_classes", type=int, default=10)
 parser.add_argument("--use_checkpoint", type=str, default=None)
@@ -111,7 +112,12 @@ def load_pretrained(backbone,checkpoint):
     for param in backbone.parameters():
         param.requires_grad = False
 
-def create_model(model_type=args.model, use_checkpoint=args.use_checkpoint,embed_feats=512, **kwargs):
+def create_model(model_type=args.model, 
+                 use_checkpoint=args.use_checkpoint,
+                 embed_feats=512,
+                 attention=args.attention,
+                 dropout=args.dropout,
+                 **kwargs):
     # pre-trained on ImageNet
     if "34" in model_type:
         backbone = resnet34(weights=ResNet34_Weights.IMAGENET1K_V1)
@@ -129,11 +135,17 @@ def create_model(model_type=args.model, use_checkpoint=args.use_checkpoint,embed
     if model_type == "resvit18":
         backbone.avgpool = nn.Identity()
         backbone.fc = nn.Identity()
+        if attention == 'graph':
+            attention = MultiHeadGraphAtten 
+        elif attention == 'classical':
+            attention = MultiHeadAtten
+        else:
+            raise ValueError(f"Unknown attention type {attention}")
         model = nn.Sequential(
             backbone,
             nn.Unflatten(1, (512, 4, 4)),
             Conv2dEmbed(512, embed_feats,patch_size=2,width=4,height=4),
-            GViTEncoder(embed_feats, heads=8),
+            GViTEncoder(embed_feats, heads=8, attention=attention, dropout=dropout),
             # shape: (batch_size, nodes=4, feats=512)
             nn.Flatten(1),
             # shape: (batch_size, nodes=4*512=2048)
@@ -151,10 +163,16 @@ class LitResnet(LightningModule):
                  batch_size=args.batch_size,
                  model_type=args.model,
                  use_checkpoint=args.use_checkpoint,
+                 attention=args.attention,
+                 dropout=args.dropout,
                  **kwargs):
         super().__init__(**kwargs)
         self.save_hyperparameters()  # auto by wandb
-        self.model = create_model(model_type=model_type, use_checkpoint=use_checkpoint,**kwargs)
+        self.model = create_model(model_type=model_type, 
+                                  use_checkpoint=use_checkpoint,
+                                  attention=attention,
+                                  dropout=dropout,
+                                  **kwargs)
 
     def forward(self, x):
         out = self.model(x)
@@ -213,7 +231,7 @@ class LitResnet(LightningModule):
         scheduler = ReduceLROnPlateau(optimizer,
                                       mode="min",
                                       factor=0.2,
-                                      patience=6,
+                                      patience=5,
                                       min_lr=5e-5)
         return {
             "optimizer": optimizer,
