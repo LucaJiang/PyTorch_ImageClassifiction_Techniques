@@ -16,7 +16,7 @@ Some generated images are showed below:
 
 * 1. DDPM without guidence:
 
-![Alt Text](https://github.com/LucaJiang/PyTorch_ImageClassifiction_Techniques/edit/master/Generation/Animation/animation.gif)
+![Alt Text](https://github.com/LucaJiang/PyTorch_ImageClassifiction_Techniques/blob/master/Generation/Animation/animation.gif)
 
 * 2. DDPM + Classifier free guidence:
 
