@@ -11,7 +11,7 @@ from torchvision.models import ResNet18_Weights, resnet18
 from torchvision.models import resnet34, ResNet34_Weights
 import wandb
 from argparse import ArgumentParser
-from IPython.core.display import display_html
+# from IPython.core.display import display_html
 from IPython.display import display
 import lightning as L
 from datamodules import CIFAR10DataModule
@@ -22,7 +22,6 @@ from lightning.pytorch.tuner.tuning import Tuner
 # from finetuning_scheduler import FinetuningScheduler
 from lightning.pytorch.loggers import WandbLogger
 import torch.optim as optim
-from torch.optim.lr_scheduler import ReduceLROnPlateau, OneCycleLR
 from torchmetrics.functional import accuracy
 from GraphAttenViTBlocks import *
 import warnings
@@ -45,17 +44,18 @@ CHECKPOINT_PATH = os.path.join(CURRENT_DIR, "checkpoints/")
 SAVE_MODELS_PATH = os.path.join(CURRENT_DIR, "save_models/")
 LOGS_PATH = os.path.join(CURRENT_DIR, "logs/")
 
-# * wandb settings
-wandb.init(anonymous="allow")
-# wandb.login(key='b3518f13f1b3184b76d233e2f2b1f7cbef587a1f')
+#* wandb settings
+wandb.login(key='b3518f13f1b3184b76d233e2f2b1f7cbef587a1f')
+wandb.init(anonymous="allow", project="CIFAR10")
+
 wandb_logger = WandbLogger(project="CIFAR10",
-                           log_model="all",
+                           log_model="True",log_dataloader_frequency=-1,
                            save_dir=CHECKPOINT_PATH)
 
 parser = ArgumentParser()
 parser.add_argument('--dataset', default='cifar10', type=str, help='dataset')
 parser.add_argument('--epochs',
-                    default=80,
+                    default=50,
                     type=int,
                     help='max epochs set in Trainer')
 parser.add_argument('--model', default='resnet34', type=str, help='model')
@@ -123,8 +123,13 @@ def create_model(model_type=args.model,
         backbone = resnet34(weights=ResNet34_Weights.IMAGENET1K_V1)
     else:
         backbone = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
-    backbone.conv1 = nn.Conv2d(3, 64, kernel_size=(
-        3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+    # Modify the pre-existing Resnet architecture from TorchVision. The pre-existing architecture is based on ImageNet images (224x224) as input. So we need to modify it for CIFAR10 images (32x32).
+    backbone.conv1 = nn.Conv2d(3,
+                               64,
+                               kernel_size=(3, 3),
+                               stride=(1, 1),
+                               padding=(1, 1),
+                               bias=False)
     backbone.maxpool = nn.Identity()
     backbone.fc = nn.Linear(512, args.num_classes)
     if "resnet" in model_type:
@@ -182,8 +187,8 @@ class LitResnet(LightningModule):
         x, y = batch
         logits = self(x)
         loss = F.nll_loss(logits, y)
-        # self.log("train_loss", loss)
-        self.log_dict({"train_loss": loss}, prog_bar=True, logger=True)
+        self.log("train_loss", loss, prog_bar=True, logger=True)
+        wandb.log({"train_loss": loss})
         return loss
 
     def evaluate(self, batch, stage=None):
@@ -198,27 +203,14 @@ class LitResnet(LightningModule):
         if stage:
             self.log(f"{stage}_loss", loss, prog_bar=True, logger=True)
             self.log(f"{stage}_acc", acc, prog_bar=True, logger=True)
+            wandb.log({f"{stage}_loss": loss})
+            wandb.log({f"{stage}_acc": acc})
 
     def validation_step(self, batch, batch_idx):
         self.evaluate(batch, "val")
 
     def test_step(self, batch, batch_idx):
         self.evaluate(batch, "test")
-
-    # def configure_optimizers(self):
-    #     # We will support Adam or SGD as optimizers.
-    #     if self.hparams.optimizer_name == "Adam":
-    #         # AdamW is Adam with a correct implementation of weight decay (see here
-    #         # for details: https://arxiv.org/pdf/1711.05101.pdf)
-    #         optimizer = optim.AdamW(self.parameters(), **self.hparams.optimizer_hparams)
-    #     elif self.hparams.optimizer_name == "SGD":
-    #         optimizer = optim.SGD(self.parameters(), **self.hparams.optimizer_hparams)
-    #     else:
-    #         assert False, f'Unknown optimizer: "{self.hparams.optimizer_name}"'
-
-    #     # We will reduce the learning rate by 0.1 after 100 and 150 epochs
-    #     scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[100, 150], gamma=0.1)
-    #     return [optimizer], [scheduler]
 
     def configure_optimizers(self):
         optimizer = optim.SGD(
@@ -227,30 +219,39 @@ class LitResnet(LightningModule):
             momentum=0.9,
             weight_decay=self.hparams.weight_decay,
         )
+        # optimizer = optim.AdamW(self.parameters(), lr=self.hparams.lr, weight_decay=self.hparams.weight_decay)
         # allow ['LambdaLR', 'MultiplicativeLR', 'StepLR', 'MultiStepLR', 'ExponentialLR', 'CosineAnnealingLR', 'ReduceLROnPlateau', 'CosineAnnealingWarmRestarts', 'ConstantLR', 'LinearLR']
-        scheduler = ReduceLROnPlateau(optimizer,
+        # scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
+        # scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[30,80], gamma=0.1)
+        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer,
                                       mode="min",
-                                      factor=0.2,
-                                      patience=5,
-                                      min_lr=5e-5)
+                                      factor=0.1,
+                                      patience=4,
+                                      min_lr=5e-8)
         return {
             "optimizer": optimizer,
             "lr_scheduler": scheduler,
-            "monitor": "val_loss"
+            "monitor": "val_loss",
+            # 'frequency': 5
         }
-        # steps_per_epoch = 45000 // self.hparams.batch_size
-        # scheduler_dict = {
+        # scheduler = {
         #     "scheduler":
         #     OneCycleLR(
         #         optimizer,
         #         0.1,
         #         epochs=self.trainer.max_epochs,
-        #         steps_per_epoch=steps_per_epoch,
+
+        #         steps_per_epoch=45000 // self.hparams.batch_size,
         #     ),
-        #     "interval":
-        #     "step",
+        #     "interval": "step",
         # }
-        return {"optimizer": optimizer, "lr_scheduler": scheduler_dict}
+        # return {
+        #     "optimizer": optimizer,
+        #     "lr_scheduler": scheduler,
+        #     "monitor": "val_loss",
+        #     'interval': 'step',
+        #     'frequency': 5
+        # }
 
 
 model = LitResnet()
@@ -259,10 +260,10 @@ early_stopping = EarlyStopping('val_loss',
                                verbose=True,
                                mode='min')
 
+# accumulator = GradientAccumulationScheduler
 # till 5th epoch, it will accumulate every 8 batches. From 5th epoch
 # till 9th epoch it will accumulate every 4 batches and after that no accumulation
 # will happen. Note that you need to use zero-indexed epoch keys here
-# accumulator = GradientAccumulationScheduler(scheduling={0: 8, 4: 4, 8: 1})
 callbacks = [
     ModelCheckpoint(monitor="val_acc", mode="max"),
     LearningRateMonitor(logging_interval="step"),
@@ -274,9 +275,10 @@ callbacks = [
     }),
     TQDMProgressBar(refresh_rate=10),
     early_stopping,
+    # About fine tuning methods:
     # BackboneFinetuning(10, lambda epoch: 0.1 * (0.5**(epoch // 10))),
     # https://lightning.ai/docs/pytorch/stable/notebooks/lightning_examples/finetuning-scheduler.html?highlight=fine%20tuning%20schedule%20provided#
-    # FinetuningScheduler(gen_ft_sched_only=True),
+    # FinetuningScheduler(),
 ]
 
 trainer = Trainer(
@@ -285,6 +287,7 @@ trainer = Trainer(
     accelerator="auto",
     # clip gradients' global norm to <=0.5 using gradient_clip_algorithm='norm' by default
     gradient_clip_val=0.5,
+    # check_val_every_n_epoch=3,
     # accumulate gradients every k batches as per the scheduling dict
     # accumulate_grad_batches=8,
     # auto_scale_batch_size="power",
@@ -292,18 +295,18 @@ trainer = Trainer(
     logger=wandb_logger,
     callbacks=callbacks,
 )
-# tuner = Tuner(trainer)
+tuner = Tuner(trainer)
 
-# # ERROR: self._internal_optimizer_metadata[opt_idx]KeyError: 0
-# #* Auto-scale batch size by growing it exponentially (default)
-# # tuner.scale_batch_size(model, datamodule=cifar10_dm, mode="power")
-# # * Auto-scale batch size with binary search
-# # tuner.scale_batch_size(model, mode="binsearch")
+# ERROR: self._internal_optimizer_metadata[opt_idx]KeyError: 0
+#* Auto-scale batch size by growing it exponentially (default)
+# tuner.scale_batch_size(model, datamodule=cifar10_dm, mode="power")
+# * Auto-scale batch size with binary search
+# tuner.scale_batch_size(model, mode="binsearch")
 
-# #* finds learning rate automatically
-# # sets hparams.lr or hparams.learning_rate to that learning rate
-# # Run learning rate finder
-# #! smaller num_training for faster build
+#* finds learning rate automatically
+# sets hparams.lr or hparams.learning_rate to that learning rate
+# Run learning rate finder
+#! smaller num_training for faster build
 # lr_finder = tuner.lr_find(model, datamodule=cifar10_dm, num_training=50)
 # # Results can be found in
 # plt.figure(figsize=(5, 5))
@@ -317,14 +320,13 @@ trainer = Trainer(
 trainer.fit(model, datamodule=cifar10_dm)
 trainer.test(model, datamodule=cifar10_dm)
 
-# Save the best checkpoint
+# Save the best checkpoint and best model
 best_checkpoint = trainer.checkpoint_callback.best_model_path
-wandb.save(os.path.join(SAVE_MODELS_PATH, best_checkpoint))
-# save best model
 best_model = model.load_from_checkpoint(best_checkpoint)
-torch.save(best_model.state_dict(), os.path.join(
-    SAVE_MODELS_PATH, 'best_model.pt'))
-wandb.save(os.path.join(SAVE_MODELS_PATH, 'best_model.pt'))
+trainer.save_checkpoint(os.path.join(CHECKPOINT_PATH, 'best.ckpt'))
+torch.save(best_model.state_dict(),
+           os.path.join(SAVE_MODELS_PATH, 'best_model.pt'))
+
 # model = LitModel.load_from_checkpoint("path/to/checkpoint.ckpt")
 
 metrics = pd.read_csv(f"{trainer.logger.log_dir}/metrics.csv")
