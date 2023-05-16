@@ -343,6 +343,7 @@ Results of "ship" class:
 
 Results of "ship" class:
 <img src="img/v3.png">
+
 --------------------
 
 Then, we apply model interpretability algorithms with a handpicked image and visualizes the attributions for each pixel by overlaying them on the image.
@@ -350,8 +351,12 @@ Then, we apply model interpretability algorithms with a handpicked image and vis
 * Integrated gradients smoothened by a noise tunnel.
 <img src="img/v5.png">
 
+--------------------
+
 * GradientShap, a linear explanation model which uses a distribution of reference samples to explain predictions of the model. 
 <img src="img/v6.png">
+
+--------------------
 
 * Occlusion-based attribution method to estimate which areas of the image are critical for the classifier's decision by occluding them and quantifying how the decision changes.
 <img src="img/v7.png">
