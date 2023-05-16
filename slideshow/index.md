@@ -102,7 +102,7 @@ Tools: random crop, random flip, random rotation, etc.
 Benefits of data augmentation:
 * Increase the size of the dataset -> Reduce **overfitting**
 * Improve **generalization** -> Improve the performance of the model
-* Increase at least **3%** accuracy in CIFA-10^[1]
+* Increase at least **3%** accuracy in CIFA-10$^1$
 ![data_aug](../img/data_augmentation.png)
 
 --------------------
@@ -321,10 +321,12 @@ Here are the advantages of this method:
 1. PyTorch Lightning: https://lightning.ai/docs/pytorch/stable/
 2. PyTorch Lightning CIFAR-10: https://lightning.ai/docs/pytorch/stable/notebooks/lightning_examples/cifar10-baseline.html
 3. Training tricks: https://lightning.ai/docs/pytorch/stable/advanced/training_tricks.html
-4. Graph Attention: https://www.baeldung.com/cs/graph-attention-networks
-5. Diffusion Model:https://lilianweng.github.io/posts/2021-07-11-diffusion-models/#:~:text=Diffusion%20models%20are%20inspired%20by,data%20samples%20from%20the%20noise
-6. Cifar-10 Generation with Diffusion Model:https://github.com/zoubohao/DenoisingDiffusionProbabilityModel-ddpm-
-7. Axiomatic Attribution for Deep Networks:https://arxiv.org/pdf/1703.01365.pdf
+--------------------
+# Reference
+5. Graph Attention: https://www.baeldung.com/cs/graph-attention-networks
+6. Diffusion Model:https://lilianweng.github.io/posts/2021-07-11-diffusion-models/#:~:text=Diffusion%20models%20are%20inspired%20by,data%20samples%20from%20the%20noise
+7. Cifar-10 Generation with Diffusion Model:https://github.com/zoubohao/DenoisingDiffusionProbabilityModel-ddpm-
+8. Axiomatic Attribution for Deep Networks:https://arxiv.org/pdf/1703.01365.pdf
 --------------------
 
 # Thanks for your listening!
