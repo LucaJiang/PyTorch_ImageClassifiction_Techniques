@@ -21,7 +21,7 @@ Diffusion Models define a Markov chain of diffusion steps to slowly add random n
 * Foward process 
 
 $$
-q(\mathcal{x}_{t} \mid x_{t-1}) = \mathcal{N}(x_{t};\sqrt{1-\beta_t}x_{t-1},\beta_t I)
+q(\mathcal{x}\_{t} \mid x_{t-1}) = \mathcal{N}(x_{t};\sqrt{1-\beta_t}x_{t-1},\beta_t I)
 $$
 
 
