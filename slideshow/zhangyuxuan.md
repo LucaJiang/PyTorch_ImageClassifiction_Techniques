@@ -21,13 +21,14 @@ Diffusion Models define a Markov chain of diffusion steps to slowly add random n
 * Foward process 
 
 $$
-q(\mathcal{x}\_{t} \mid x_{t-1}) = \mathcal{N}(x_{t};\sqrt{1-\beta_t}x_{t-1},\beta_t I)
+q\left(x_t \mid x_{t-1}\right)=\mathcal{N}\left(x_t ; \sqrt{1-\beta_t} x_{t-1}, \beta_t \mathbf{I}\right) \quad q\left(x_{1: T} \mid x_0\right)=\prod_{t=1}^T q\left(x_t \mid x_{t-1}\right)
 $$
 
+* Reverse process
 
-*
-*
-
+$$
+p_\theta\left(x_{0: T}\right)=p\left(x_T\right) \prod_{t=1}^T p_\theta\left(x_{t-1} \mid x_t\right) \quad p_\theta\left(x_{t-1} \mid x_t\right)=\mathcal{N}\left(x_{t-1} ; \mu_\theta\left(x_t, t\right), \Sigma_\theta\left(x_t, t\right)\right)
+$$
 
 <img src="../img/Diffusion_Model.png" alt="Alt Text" style="width: 550px; height: 400px;"><img src="../img/animation.gif" alt="Alt Text" style="width: 400px; height: 400px;">
 
