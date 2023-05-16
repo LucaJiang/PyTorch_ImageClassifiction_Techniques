@@ -14672,6 +14672,23 @@ div.jp-OutputPrompt {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Contents">Contents<a class="anchor-link" href="#Contents">&#182;</a></h2><ol>
+<li><a href="https://lucajiang.github.io/PyTorch_ImageClassifiction_Techniques/slideshow/#/2">Image Generation</a></li>
+<li><a href="https://lucajiang.github.io/PyTorch_ImageClassifiction_Techniques/slideshow/#/6">Training and Tuning with Tricks</a></li>
+<li><a href="https://lucajiang.github.io/PyTorch_ImageClassifiction_Techniques/slideshow/#/20">Graph Attention ViT</a></li>
+<li><a href="https://lucajiang.github.io/PyTorch_ImageClassifiction_Techniques/slideshow/#/27">Interpretion</a></li>
+</ol>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="Data-Augmentation:-Image-Generation">Data Augmentation: Image Generation<a class="anchor-link" href="#Data-Augmentation:-Image-Generation">&#182;</a></h2><ul>
 <li>Increasing model's ability to generalize to new and unseen data.</li>
 <li>Help the model learn more robust and invariant features.</li>
@@ -14822,10 +14839,9 @@ Benefits of data augmentation:</p>
 <ul>
 <li>Increase the size of the dataset -&gt; Reduce <strong>overfitting</strong></li>
 <li>Improve <strong>generalization</strong> -&gt; Improve the performance of the model</li>
-<li>Increase at least <strong>3%</strong> accuracy in CIFA-10[^21]</li>
+<li>Increase at least <strong>3%</strong> accuracy in CIFA-10^[1]</li>
 </ul>
-<p><img src="../img/data_augmentation.png" alt="data_aug" />
-[^21]:Shorten C, Khoshgoftaar T M. A survey on image data augmentation for deep learning[J]. Journal of big data, 2019, 6(1): 1-48.</p>
+<p><img src="../img/data_augmentation.png" alt="data_aug" /></p>
 
 </div>
 </div>
@@ -15181,6 +15197,39 @@ In this project, we use the <code>Conv2d</code> layer to convert instead of the 
 <ol>
 <li>Don't need to train the whole model from the beginning. It's easy to just train a new added block.</li>
 <li>Improve the performance of the existed model just in a few epochs, saving time and money.</li>
+</ol>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<!-- zjt -->
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h1 id="Reference">Reference<a class="anchor-link" href="#Reference">&#182;</a></h1><ol>
+<li>Shorten C, Khoshgoftaar T M. A survey on image data augmentation for deep learning[J]. Journal of big data, 2019, 6(1): 1-48.</li>
+<li>PyTorch Lightning: <a href="https://lightning.ai/docs/pytorch/stable/">https://lightning.ai/docs/pytorch/stable/</a></li>
+<li>PyTorch Lightning CIFAR-10: <a href="https://lightning.ai/docs/pytorch/stable/notebooks/lightning_examples/cifar10-baseline.html">https://lightning.ai/docs/pytorch/stable/notebooks/lightning_examples/cifar10-baseline.html</a></li>
+<li>Training tricks: <a href="https://lightning.ai/docs/pytorch/stable/advanced/training_tricks.html">https://lightning.ai/docs/pytorch/stable/advanced/training_tricks.html</a></li>
+<li>Graph Attention: <a href="https://www.baeldung.com/cs/graph-attention-networks">https://www.baeldung.com/cs/graph-attention-networks</a></li>
+<li>Diffusion Model:<a href="https://lilianweng.github.io/posts/2021-07-11-diffusion-models/#:~:text=Diffusion%20models%20are%20inspired%20by,data%20samples%20from%20the%20noise">https://lilianweng.github.io/posts/2021-07-11-diffusion-models/#:~:text=Diffusion%20models%20are%20inspired%20by,data%20samples%20from%20the%20noise</a></li>
+<li>Cifar-10 Generation with Diffusion Model:<a href="https://github.com/zoubohao/DenoisingDiffusionProbabilityModel-ddpm-">https://github.com/zoubohao/DenoisingDiffusionProbabilityModel-ddpm-</a></li>
+<li>Axiomatic Attribution for Deep Networks:<a href="https://arxiv.org/pdf/1703.01365.pdf">https://arxiv.org/pdf/1703.01365.pdf</a></li>
 </ol>
 
 </div>
