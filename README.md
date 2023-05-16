@@ -1,6 +1,7 @@
 # PyTorch_ImageClassifiction_Techniques
 
 For MSDM5055: A survey on deep learning image classification technics based on PyTorch and PyTorch lightning
+[Slices URL](https://lucajiang.github.io/PyTorch_ImageClassifiction_Techniques/slideshow/)
 
 - [PyTorch\_ImageClassifiction\_Techniques](#pytorch_imageclassifiction_techniques)
   - [Slices contents:](#slices-contents)
@@ -12,11 +13,9 @@ For MSDM5055: A survey on deep learning image classification technics based on P
 
 ## Slices contents:
 Done:
-- [x] why we use lightning and compare with pytorch
-- [x] training tricks
+...
 todo: 
-- [ ] GAN
-- [ ] ...
+- [ ] Visualization
 - [ ] usage of colab and git: it's part of DL ability
 
 
@@ -25,7 +24,7 @@ This is a repository for the final project of MSDM5055 about applying image clas
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/LucaJiang/PyTorch_ImageClassifiction_Techniques/blob/main/runcodes.ipynb) 
 
 ## Features
-- [x] Graph Attention Block
+- [x] Data Augmentation: Cifar-10 generation with conditional diffusion model
 - [x] PyTorch Lightning
   - [x] Effective Training Techniques
     - [x] Accumulate Gradients: GradientAccumulationScheduler
@@ -33,8 +32,8 @@ This is a repository for the final project of MSDM5055 about applying image clas
     - [x] Stochastic Weight Averaging: StochasticWeightAveraging
     - [x] Batch Size Finder: tuner.scale_batch_size(model, mode="power")
     - [x] Learning Rate Finder: tuner.lr_find(model)
-  - [ ] Fine-tune Scheduler: debug
-- [x] Data Augmentation: Cifar-10 generation with conditional diffusion model
+- [x] Graph Attention Block
+- [ ] Visualization
 
 
 ## Run in Colab
