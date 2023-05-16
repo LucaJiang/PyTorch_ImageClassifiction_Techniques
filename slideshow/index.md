@@ -19,7 +19,7 @@ Zhang Yuxuan, Jiang Wenxin, Fan Yifei, Zhang Juntao <small>(In order of speakers
 <center><img src="../img/Generation_Networks.png" style="zoom:.4"></center>
 
 --------------------
-### ACGAN
+### DCGAN
 
 <center><img src="../img/ACGAN.png" style="zoom:1.2"></center>
 
