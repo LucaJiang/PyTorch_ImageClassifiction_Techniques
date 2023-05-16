@@ -14672,43 +14672,7 @@ div.jp-OutputPrompt {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<ul>
-<li><a href="#a-survey-on-deep-learning-image-classification-technics-based-on-pytorch-and-pytorch-lightning">A survey on deep learning image classification technics based on PyTorch and PyTorch lightning</a></li>
-<li><a href="#training-and-tuning-with-tricks-for-cifar-10-dataset-in-pytorch-and-pytorch-lightning">Training and Tuning with Tricks for CIFAR-10 dataset in PyTorch and PyTorch Lightning</a><ul>
-<li><a href="#datasets-and-models">Datasets and models</a><ul>
-<li><a href="#transforms-data-augmentation">Transforms: Data Augmentation</a></li>
-</ul>
-</li>
-<li><a href="#21shorten-c-khoshgoftaar-t-m-a-survey-on-image-data-augmentation-for-deep-learningj-journal-of-big-data-2019-61-1-48">[^21]:Shorten C, Khoshgoftaar T M. A survey on image data augmentation for deep learning[J]. Journal of big data, 2019, 6(1): 1-48.</a><ul>
-<li><a href="#transforms-data-normalization-and-resizing">Transforms: Data Normalization and Resizing</a></li>
-<li><a href="#transfer-learning">Transfer Learning</a></li>
-<li><a href="#replicability-and-determinism">Replicability and Determinism</a></li>
-<li><a href="#tricks-learning-rate-finder">Tricks: Learning Rate Finder</a></li>
-</ul>
-</li>
-<li><a href="#effective-training-techniques">Effective Training Techniques</a></li>
-<li><a href="#results">Results</a></li>
-</ul>
-</li>
-<li><a href="#graph-attention-vit">Graph Attention ViT</a><ul>
-<li><a href="#the-basis-of-attention">The basis of attention</a><ul>
-<li><a href="#the-general-form-for-the-self-attention">The general form for the self-attention</a></li>
-<li><a href="#the-classical-self-attention">The classical self-attention</a></li>
-</ul>
-</li>
-<li><a href="#graph-attention-block">Graph Attention Block</a><ul>
-<li><a href="#the-formula-for-graph-attention">The formula for graph attention</a></li>
-</ul>
-</li>
-<li><a href="#graph-attention-block-1">Graph Attention Block</a></li>
-<li><a href="#conv2d-embedding">Conv2d Embedding</a></li>
-<li><a href="#experiment">Experiment</a></li>
-<li><a href="#conclusion">Conclusion</a></li>
-</ul>
-</li>
-<li><a href="#thanks-for-your-listening">Thanks for your listening!</a></li>
-</ul>
-
+<h1 id="Contents">Contents<a class="anchor-link" href="#Contents">&#182;</a></h1>
 </div>
 </div>
 </div>
@@ -14781,6 +14745,42 @@ div.jp-OutputPrompt {
 <li>Optimizer: SGD(Stochastic Gradient Descent) or Adam(Adaptive Moment Estimation)</li>
 <li>Hyperparameters: Learning Rate, Batch Size, Schedule, etc.</li>
 </ul>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Data-Augmentation:-Image-Generation">Data Augmentation: Image Generation<a class="anchor-link" href="#Data-Augmentation:-Image-Generation">&#182;</a></h3><p>Data augmentation for image classification can help improve the performance of a machine learning model by increasing its ability to generalize to new and unseen data and can also help the model learn more robust and invariant features that are less sensitive to variations in lighting, orientation, and other factors.</p>
+<p><img src="../img/Generation_Networks.png" alt="Alt Text" style="width: 550px; height: 400px;"><img src="../img/Fake.png" alt="Alt Text" style="width: 400px; height: 400px;"></p>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Diffusion-Moedel">Diffusion Moedel<a class="anchor-link" href="#Diffusion-Moedel">&#182;</a></h3><p>Diffusion Models define a Markov chain of diffusion steps to slowly add random noise to data and then learn to reverse the diffusion process to construct desired data samples from the noise.</p>
+<ul>
+<li>Foward process</li>
+</ul>
+$$
+q\left(x_t \mid x_{t-1}\right)=\mathcal{N}\left(x_t ; \sqrt{1-\beta_t} x_{t-1}, \beta_t \mathbf{I}\right) \quad q\left(x_{1: T} \mid x_0\right)=\prod_{t=1}^T q\left(x_t \mid x_{t-1}\right)
+$$<ul>
+<li>Reverse process</li>
+</ul>
+$$
+p_\theta\left(x_{0: T}\right)=p\left(x_T\right) \prod_{t=1}^T p_\theta\left(x_{t-1} \mid x_t\right) \quad p_\theta\left(x_{t-1} \mid x_t\right)=\mathcal{N}\left(x_{t-1} ; \mu_\theta\left(x_t, t\right), \Sigma_\theta\left(x_t, t\right)\right)
+$$<p><img src="../img/Diffusion_Model.png" alt="Alt Text" style="width: 550px; height: 400px;"><img src="../img/animation.gif" alt="Alt Text" style="width: 400px; height: 400px;"></p>
 
 </div>
 </div>
@@ -14978,9 +14978,10 @@ Or more commonly used: TensorBoard</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Results">Results<a class="anchor-link" href="#Results">&#182;</a></h2><center class="half">
+<h2 id="Results">Results<a class="anchor-link" href="#Results">&#182;</a></h2><!-- <center class="half">
     <img src="../img/cifar10train_loss.png" width="400"/><img src="../img/cifar10val_loss.png" width="200"/><img src="../img/cifar10test_acc.png" width="200"/>
-</center>
+</center> -->
+<p><img src="../img/cifar10resnet34result.png" alt="cifar10result" /></p>
 <!-- ![train_loss](../img/cifar10train_loss.png)
 ![val_loss](../img/cifar10val_loss.png)
 ![test_acc](../img/cifar10test_acc.png) -->
