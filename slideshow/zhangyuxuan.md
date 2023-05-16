@@ -12,7 +12,7 @@
 
 Data augmentation for image classification can help improve the performance of a machine learning model by increasing its ability to generalize to new and unseen data and can also help the model learn more robust and invariant features that are less sensitive to variations in lighting, orientation, and other factors.
 
-<img src="../img/Generation_Networks.png" alt="Alt Text" style="width: 550px; height: 400px;"><img src="../img/ACGAN.png" alt="Alt Text" style="width: 400px; height: 400px;">
+<img src="../img/Generation_Networks.png" alt="Alt Text" style="width: 550px; height: 400px;"><img src="../img/Fake.png" alt="Alt Text" style="width: 400px; height: 400px;">
 
 --------------------
 ### Diffusion Moedel
@@ -21,7 +21,7 @@ Diffusion models are inspired by non-equilibrium thermodynamics. They define a M
 
 
 
-<img src="../img/Diffusion_Model.png" alt="Alt Text" style="width: 550px; height: 400px;"><img src="../img/Fake.png" alt="Alt Text" style="width: 400px; height: 400px;">
+<img src="../img/Diffusion_Model.png" alt="Alt Text" style="width: 550px; height: 400px;"><img src="../img/animation.gif" alt="Alt Text" style="width: 400px; height: 400px;">
 
 
 --------------------
