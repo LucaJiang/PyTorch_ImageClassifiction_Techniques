@@ -327,19 +327,24 @@ Apply model interpretability algorithms from Captum library on CIFAR-10 dataset 
 $$
 \text { IntegratedGrads }_i(x)::=\left(x_i-x_i^{\prime}\right) \times \int_{\alpha=0}^1 \frac{\partial F\left(x^{\prime}+\alpha \times\left(x-x^{\prime}\right)\right)}{\partial x_i} d \alpha
 $$
+
 --------------------
+
 Results of "cat" class:
 <img src="img/v1.png">
 
 Results of "plane" class:
 <img src="img/v4.png">
+
 --------------------
+
 Results of "ship" class:
 <img src="img/v2.png">
 
 Results of "ship" class:
 <img src="img/v3.png">
 --------------------
+
 Then, we apply model interpretability algorithms with a handpicked image and visualizes the attributions for each pixel by overlaying them on the image.
 
 * Integrated gradients smoothened by a noise tunnel.
@@ -350,6 +355,7 @@ Then, we apply model interpretability algorithms with a handpicked image and vis
 
 * Occlusion-based attribution method to estimate which areas of the image are critical for the classifier's decision by occluding them and quantifying how the decision changes.
 <img src="img/v7.png">
+
 --------------------
 
 ## Collaboration with Git and Colab
