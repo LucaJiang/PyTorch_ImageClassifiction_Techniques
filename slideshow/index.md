@@ -4,28 +4,7 @@
 Zhang Yuxuan, Jiang Wenxin, Fan Yifei, Zhang Juntao <small>(In order of speakers)</small>
 
 --------------------
-- [A survey on deep learning image classification technics based on PyTorch and PyTorch lightning](#a-survey-on-deep-learning-image-classification-technics-based-on-pytorch-and-pytorch-lightning)
-- [Training and Tuning with Tricks for CIFAR-10 dataset in PyTorch and PyTorch Lightning](#training-and-tuning-with-tricks-for-cifar-10-dataset-in-pytorch-and-pytorch-lightning)
-  - [Datasets and models](#datasets-and-models)
-    - [Transforms: Data Augmentation](#transforms-data-augmentation)
-  - [\[^21\]:Shorten C, Khoshgoftaar T M. A survey on image data augmentation for deep learning\[J\]. Journal of big data, 2019, 6(1): 1-48.](#21shorten-c-khoshgoftaar-t-m-a-survey-on-image-data-augmentation-for-deep-learningj-journal-of-big-data-2019-61-1-48)
-    - [Transforms: Data Normalization and Resizing](#transforms-data-normalization-and-resizing)
-    - [Transfer Learning](#transfer-learning)
-    - [Replicability and Determinism](#replicability-and-determinism)
-    - [Tricks: Learning Rate Finder](#tricks-learning-rate-finder)
-  - [Effective Training Techniques](#effective-training-techniques)
-  - [Results](#results)
-- [Graph Attention ViT](#graph-attention-vit)
-  - [The basis of attention](#the-basis-of-attention)
-    - [The general form for the self-attention](#the-general-form-for-the-self-attention)
-    - [The classical self-attention](#the-classical-self-attention)
-  - [Graph Attention Block](#graph-attention-block)
-    - [The formula for graph attention](#the-formula-for-graph-attention)
-  - [Graph Attention Block](#graph-attention-block-1)
-  - [Conv2d Embedding](#conv2d-embedding)
-  - [Experiment](#experiment)
-  - [Conclusion](#conclusion)
-- [Thanks for your listening!](#thanks-for-your-listening)
+# Contents
 
 
 --------------------
@@ -161,13 +140,13 @@ Or more commonly used: TensorBoard
 --------------------
 ## Results
 
-<center class="half">
+<!-- <center class="half">
     <img src="../img/cifar10train_loss.png" width="400"/><img src="../img/cifar10val_loss.png" width="200"/><img src="../img/cifar10test_acc.png" width="200"/>
-</center>
+</center> -->
 
-<!-- ![train_loss](../img/cifar10train_loss.png)
+![train_loss](../img/cifar10train_loss.png)
 ![val_loss](../img/cifar10val_loss.png)
-![test_acc](../img/cifar10test_acc.png) -->
+![test_acc](../img/cifar10test_acc.png)
 <!-- jiangwx end -->
 
 --------------------

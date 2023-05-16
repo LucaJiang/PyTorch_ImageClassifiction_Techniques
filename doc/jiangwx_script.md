@@ -4,11 +4,11 @@ First, we can see it's easy to convert the pytorch code in the left panel to the
 
 Second, it's easier to customize the training process with Trainer and Callbacks modules. You can just add the techniques you want. This allows us to focus on the scientific details.
 
-Besides, Lightning includes features such as multi-GPU training and distributed training if we need to use a larger dataset or more complex model.
+Besides, Lightning includes features such as multi-GPU training and distributed training if we want to use a larger dataset or more complex model.
 
-Therefore, we try to use lightning to finish this part of project.
+Therefore, we try to use lightning.
 
-## Datasets and models
+## Datasets and models (opt)
 We use the CIFAR-10 dataset and ResNet18 or 34 model. NLL loss, which is the same as CrossEntropyLoss in this case. The optimizer is SGD, also we tried a commonly used Adam. 
 
 ## Transforms: Data Augmentation
@@ -30,7 +30,9 @@ We set the random seed to make our result reproducible. Also, we need to set the
 lr-finder can help to find a suitable learning rate. If it works, we don't need to tune lr. That is if your lr finder plot looks like the blue curve, you can choose the lr in the red circle. It should be convex, but not to pick the lowest loss, but in the middle of the sharpest downward slope, which should let loss decrease faster.
 
 ## Effective Training Techniques
-We use the following tricks to train and tune the model. We don't have to know the details of these tricks, but use them easily with lightning.
+We use the following tricks to train and tune the model. We don't have to know the details of these tricks, but use them easily with lightning. It's worth mentioning that we can stop the training process at any time with early stopping and customize the learning rate with learning rate scheduler.
+
+(opt)
 * Gradient Accumulation: Accumulate the gradient for several batches. This can make the model converge faster. 
 * Early Stopping: Stop training when the validation loss stops decreasing. This can prevent overfitting. 
 * Gradient Clipping: Clip the gradient to a certain range. Prevent gradient explosion or vanish.
