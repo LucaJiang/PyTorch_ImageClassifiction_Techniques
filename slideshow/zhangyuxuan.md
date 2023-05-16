@@ -19,9 +19,9 @@ Data augmentation for image classification can help improve the performance of a
 
 Diffusion Models define a Markov chain of diffusion steps to slowly add random noise to data and then learn to reverse the diffusion process to construct desired data samples from the noise.
 * Foward process
-$$
+$
 q
-$$
+$
 *
 *
 
