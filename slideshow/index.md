@@ -5,6 +5,10 @@ Zhang Yuxuan, Jiang Wenxin, Fan Yifei, Zhang Juntao <small>(In order of speakers
 
 --------------------
 ## Contents
+1. [Image Generation](https://lucajiang.github.io/PyTorch_ImageClassifiction_Techniques/slideshow/#/2)
+2. [Training and Tuning with Tricks](https://lucajiang.github.io/PyTorch_ImageClassifiction_Techniques/slideshow/#/6)
+3. [Graph Attention ViT](https://lucajiang.github.io/PyTorch_ImageClassifiction_Techniques/slideshow/#/20)
+4. [Interpretion](https://lucajiang.github.io/PyTorch_ImageClassifiction_Techniques/slideshow/#/27)
 
 --------------------
 ## Data Augmentation: Image Generation
@@ -98,9 +102,9 @@ Tools: random crop, random flip, random rotation, etc.
 Benefits of data augmentation:
 * Increase the size of the dataset -> Reduce **overfitting**
 * Improve **generalization** -> Improve the performance of the model
-* Increase at least **3%** accuracy in CIFA-10[^21]
+* Increase at least **3%** accuracy in CIFA-10^[1]
 ![data_aug](../img/data_augmentation.png)
-[^21]:Shorten C, Khoshgoftaar T M. A survey on image data augmentation for deep learning[J]. Journal of big data, 2019, 6(1): 1-48.
+
 --------------------
 ### Transforms: Data Normalization and Resizing
 Tools: Normalize, Resize, etc.
@@ -313,6 +317,18 @@ Here are the advantages of this method:
 1. Don't need to train the whole model from the beginning. It's easy to just train a new added block.
 2. Improve the performance of the existed model just in a few epochs, saving time and money.
 
+--------------------
+<!-- zjt -->
+--------------------
+# Reference
+1. Shorten C, Khoshgoftaar T M. A survey on image data augmentation for deep learning[J]. Journal of big data, 2019, 6(1): 1-48.
+1. PyTorch Lightning: https://lightning.ai/docs/pytorch/stable/
+2. PyTorch Lightning CIFAR-10: https://lightning.ai/docs/pytorch/stable/notebooks/lightning_examples/cifar10-baseline.html
+3. Training tricks: https://lightning.ai/docs/pytorch/stable/advanced/training_tricks.html
+4. Graph Attention: https://www.baeldung.com/cs/graph-attention-networks
+5. Diffusion Model:https://lilianweng.github.io/posts/2021-07-11-diffusion-models/#:~:text=Diffusion%20models%20are%20inspired%20by,data%20samples%20from%20the%20noise
+6. Cifar-10 Generation with Diffusion Model:https://github.com/zoubohao/DenoisingDiffusionProbabilityModel-ddpm-
+7. Axiomatic Attribution for Deep Networks:https://arxiv.org/pdf/1703.01365.pdf
 --------------------
 
 # Thanks for your listening!
