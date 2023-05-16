@@ -3,10 +3,10 @@
 
 Apply model interpretability algorithms from Captum library on CIFAR-10 dataset in order to attribute the label of the image to the input pixels and visualize it.
 
-* 1. Display the original image
-* 2. Compute gradients with respect to its class and transposes them for visualization purposes.
-* 3. Apply integrated gradients attribution algorithm to computes the integral of the gradients of the output prediction  for its class with respect to the input image pixels.
-* 4. Use integrated gradients and noise tunnel with smoothgrad square option on the test image. Add gaussian noise to the input image $n times, computes the attributions for $n$ images and returns the mean of the squared attributions across $n images.
+* Display the original image
+* Compute gradients with respect to its class and transposes them for visualization purposes.
+* Apply integrated gradients attribution algorithm to computes the integral of the gradients of the output prediction  for its class with respect to the input image pixels.
+* Use integrated gradients and noise tunnel with smoothgrad square option on the test image. Add gaussian noise to the input image $n$ times, computes the attributions for $n$ images and returns the mean of the squared attributions across $n images.
 * 5. Apply DeepLift on test image. Deeplift assigns attributions to each input pixel by looking at the differences of output and its reference in terms of the differences of the input from the reference.
 
 $$
