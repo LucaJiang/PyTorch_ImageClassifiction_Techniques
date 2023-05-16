@@ -25,6 +25,10 @@ Diffusion models are inspired by non-equilibrium thermodynamics. They define a M
   <img src="../img/animation.gif" alt="Alt Text 2" style="width: 50%;">
 </div>
 
+| Header 1 | Header 2 |
+| --- | --- |
+| ![Image 1](../img/Diffusion_Model.png) | ![Image 2](../img/animation.gif) |
+
 
 --------------------
 ### Data Augmentation: Image Transformation
