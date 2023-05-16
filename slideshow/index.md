@@ -4,15 +4,17 @@ author1,author2,author3,author4
 
 --------------------
 
-## Attention Block
+# Graph Attention ViT
 
-In pratice, since the transformer becomes popular, many companies and researchers want to add attention block to their existed model in order to improve the performance. However, training a attention related model is computation consuming. One solution is that fix the weight of the pretrained model and only train the attention block. 
+In pratice, since the transformer becomes more and more popular, many companies and researchers want to add **attention** block to their existed model in order to improve the performance. However, training a attention related model is computation consuming and not easy.
 
-In this project, we add the attention block to the resnet18 model. Instead of using the traditional attention block, we use the graph attention block, inspired by the graph attention network, to extract the features from image spatches. And we follow the ViT structure to utilize the attention block.
+In this project, we add the attention block to the resnet18 model. And we follow the ViT structure to utilize the attention block.
 
 <center><img src="https://assets-global.website-files.com/5d7b77b063a9066d83e1209c/639b1df59b5ec8f6e5fdb8cf_transformer%20gif.gif" style="zoom:30%;"></center>
 
 -----------------
+
+## The basis of attention
 
 ### The general form for the self-attention
 
@@ -36,13 +38,13 @@ where $H\in\mathbb{R}^{f\times n}$ is the feature matrix for each embedding, $Q,
 
 -----------------
 
-### Graph Attention Block
+## Graph Attention Block
 
 The graph attention block is shown in the following figure,
 
 <center><img src="https://pic4.zhimg.com/v2-526634b065899482bbe9811af105ab73_b.jpg" style="zoom:.8"></center>
 
-#### The formula for graph attention
+### The formula for graph attention
 
 $$
 \alpha_{ij}=softmax(\sigma(W^{\top}[h_i||h_j]))
@@ -52,7 +54,7 @@ where $W\in\mathbb{R}^{f\times 1}$ is the weight, $h_i\in \mathbb{R}^{f}$ is the
 
 -----------------
 
-### Graph Attention Block
+## Graph Attention Block
 
 Convert in this form, the attention matrix $A$ can be computed as follows:
 
@@ -73,12 +75,11 @@ A = torch.softmax(self.activation(Q.transpose(-1,-2)+K),dim=-1)
 # A : (batch, nodes, nodes)
 ```
 
-
-<!-- Comparing to the traditional attention block, the graph attention block is more flexible and uses less trainable parameter. -->
+<!-- Comparing to the traditional attention block, the graph attention block use addition between Q and K instead of matrix multiplication, which reduce computation -->
 
 -----------------
 
-### Conv2d Embedding
+## Conv2d Embedding
 
 In order to use the graph attention block, we should convert patches into feature vectors of nodes in the graph.
 In this project, we use the `Conv2d` layer to convert instead of the `Flatten` layer. 
@@ -91,7 +92,7 @@ Set the `kernel_size` and `stride_size` equal to `patch_size`.
 
 -----------------
 
-### Experiment
+## Experiment
 
 <img src="img/resvit-result.png">
 
@@ -106,7 +107,7 @@ The test accuracy even decreases when we add the attention block to the resnet18
 
 -----------------
 
-### Conclusion
+## Conclusion
 
 In conclusion, using the pretrained model to boost the performance of new added attention block is a good choice.
 
