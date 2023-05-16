@@ -1,14 +1,16 @@
 # Graph Attention ViT
 
-In pratice, since transformer becomes more and more popular, many companies and researchers want to add attention block to their model to improve performance. However, training an attention related model is computation consuming and not easy. One solution is that, froze pretrained model and only train the attention block. 
+In this section, we try to utilize the Attention.
 
-In this project, we add the attention block to the resnet18. Instead of using traditional attention block, we use graph attention block to extract the features from image patches. And we also follow the ViT structure to utilize the attention block.
+In pratice, since transformer becomes more and more popular, many companies and researchers want to add attention block to their model to improve performance. However, training an attention related model is computation consuming and not easy. One solution is that, froze pretrained model and only train attention block. 
+
+We add attention block to resnet18. Instead of using traditional attention block, we use graph attention block to extract the features from image patches. And we also follow the ViT structure to utilize attention block.
 
 -----------------
 
 # The basis of attention
 
-This part is about math of attention mechanism. Since it's quite popular, I think most of you have already known it. So let's skip this part.
+This part is about math in attention mechanism. Since it's quite popular, I think most of you have already known it. So let's skip this part.
 
 -----------------
 

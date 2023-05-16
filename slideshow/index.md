@@ -4,9 +4,6 @@
 Zhang Yuxuan, Jiang Wenxin, Fan Yifei, Zhang Juntao <small>(In order of speakers)</small>
 
 --------------------
-## Contents
-
---------------------
 ## Data Augmentation: Image Generation
 
 * Increasing model's ability to generalize to new and unseen data.
@@ -201,7 +198,7 @@ Or more commonly used: TensorBoard
 
 --------------------
 
-# Graph Attention ViT
+## Graph Attention ViT
 
 In pratice, since the transformer becomes more and more popular, many companies and researchers want to add **attention** block to their existed model in order to improve the performance. However, training an attention related model is computation consuming and not easy.
 
@@ -213,25 +210,21 @@ In this project, we add the attention block to the resnet18 model. And we follow
 
 ## The basis of attention
 
-### The general form for the self-attention
+- The general form for the self-attention
 
-The general form for self-attention is as follows:
+    $$
+    A_{ij}=f(h_i,h_j)
+    $$
 
-$$
-A_{ij}=f(h_i,h_j)
-$$
+    where $h_i$ and $h_j$ are the features for node $i$ and $j$, and $f$ is an arbitrary function that computes the attention score between two nodes.
 
-where $h_i$ and $h_j$ are the features for node $i$ and $j$, and $f$ is an arbitrary function that computes the attention score between two nodes.
+- The classical self-attention
 
-### The classical self-attention
+    $$
+    A=softmax\left(\frac{H^{\top}(Q^{\top}K)H}{\sqrt{d_k}}\right)
+    $$
 
-The classical self-attention is computed as follows:
-
-$$
-A=softmax\left(\frac{H^{\top}(Q^{\top}K)H}{\sqrt{d_k}}\right)
-$$
-
-where $H\in\mathbb{R}^{f\times n}$ is the feature matrix for each embedding, $Q,K\in\mathbb{R}^{f^{'}\times f}$ are the query and key matrix for self-attention, and $d_k$ is the dimension of the key vector. Actually, it's just a bilinear function. 
+    where $H\in\mathbb{R}^{f\times n}$ is the feature matrix for each embedding, $Q,K\in\mathbb{R}^{f^{'}\times f}$ are the query and key matrix for self-attention, and $d_k$ is the dimension of the key vector. Actually, it's just a bilinear function. 
 
 -----------------
 
@@ -241,13 +234,13 @@ The graph attention block is shown in the following figure,
 
 <center><img src="https://pic4.zhimg.com/v2-526634b065899482bbe9811af105ab73_b.jpg" style="zoom:.8"></center>
 
-### The formula for graph attention
+- The formula for graph attention
 
-$$
-A_{ij}=softmax(\sigma(W^{\top}[h_i||h_j]))
-$$
+    $$
+    A_{ij}=softmax(\sigma(W^{\top}[h_i||h_j]))
+    $$
 
-where $W\in\mathbb{R}^{f\times 1}$ is the weight, $h_i\in \mathbb{R}^{f}$ is the feature of the $i^{th}$ node  and $\sigma$ represents for activation function.
+    where $W\in\mathbb{R}^{f\times 1}$ is the weight, $h_i\in \mathbb{R}^{f}$ is the feature of the $i^{th}$ node  and $\sigma$ represents for activation function.
 
 -----------------
 

@@ -14672,17 +14672,6 @@ div.jp-OutputPrompt {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Contents">Contents<a class="anchor-link" href="#Contents">&#182;</a></h2>
-</div>
-</div>
-</div>
-</div></section></section><section ><section >
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="Data-Augmentation:-Image-Generation">Data Augmentation: Image Generation<a class="anchor-link" href="#Data-Augmentation:-Image-Generation">&#182;</a></h2><ul>
 <li>Increasing model's ability to generalize to new and unseen data.</li>
 <li>Help the model learn more robust and invariant features.</li>
@@ -15033,7 +15022,7 @@ Or more commonly used: TensorBoard</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h1 id="Graph-Attention-ViT">Graph Attention ViT<a class="anchor-link" href="#Graph-Attention-ViT">&#182;</a></h1><p>In pratice, since the transformer becomes more and more popular, many companies and researchers want to add <strong>attention</strong> block to their existed model in order to improve the performance. However, training an attention related model is computation consuming and not easy.</p>
+<h2 id="Graph-Attention-ViT">Graph Attention ViT<a class="anchor-link" href="#Graph-Attention-ViT">&#182;</a></h2><p>In pratice, since the transformer becomes more and more popular, many companies and researchers want to add <strong>attention</strong> block to their existed model in order to improve the performance. However, training an attention related model is computation consuming and not easy.</p>
 <p>In this project, we add the attention block to the resnet18 model. And we follow the ViT structure to utilize the attention block.</p>
 <center><img src="https://assets-global.website-files.com/5d7b77b063a9066d83e1209c/639b1df59b5ec8f6e5fdb8cf_transformer%20gif.gif" style="zoom:30%;"></center>
 
@@ -15047,14 +15036,20 @@ Or more commonly used: TensorBoard</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="The-basis-of-attention">The basis of attention<a class="anchor-link" href="#The-basis-of-attention">&#182;</a></h2><h3 id="The-general-form-for-the-self-attention">The general form for the self-attention<a class="anchor-link" href="#The-general-form-for-the-self-attention">&#182;</a></h3><p>The general form for self-attention is as follows:</p>
-$$
-A_{ij}=f(h_i,h_j)
-$$<p>where $h_i$ and $h_j$ are the features for node $i$ and $j$, and $f$ is an arbitrary function that computes the attention score between two nodes.</p>
-<h3 id="The-classical-self-attention">The classical self-attention<a class="anchor-link" href="#The-classical-self-attention">&#182;</a></h3><p>The classical self-attention is computed as follows:</p>
-$$
-A=softmax\left(\frac{H^{\top}(Q^{\top}K)H}{\sqrt{d_k}}\right)
-$$<p>where $H\in\mathbb{R}^{f\times n}$ is the feature matrix for each embedding, $Q,K\in\mathbb{R}^{f^{'}\times f}$ are the query and key matrix for self-attention, and $d_k$ is the dimension of the key vector. Actually, it's just a bilinear function.</p>
+<h2 id="The-basis-of-attention">The basis of attention<a class="anchor-link" href="#The-basis-of-attention">&#182;</a></h2><ul>
+<li><p>The general form for the self-attention</p>
+<p>$$
+  A_{ij}=f(h_i,h_j)
+  $$</p>
+<p>where $h_i$ and $h_j$ are the features for node $i$ and $j$, and $f$ is an arbitrary function that computes the attention score between two nodes.</p>
+</li>
+<li><p>The classical self-attention</p>
+<p>$$
+  A=softmax\left(\frac{H^{\top}(Q^{\top}K)H}{\sqrt{d_k}}\right)
+  $$</p>
+<p>where $H\in\mathbb{R}^{f\times n}$ is the feature matrix for each embedding, $Q,K\in\mathbb{R}^{f^{'}\times f}$ are the query and key matrix for self-attention, and $d_k$ is the dimension of the key vector. Actually, it's just a bilinear function.</p>
+</li>
+</ul>
 
 </div>
 </div>
@@ -15068,9 +15063,14 @@ $$<p>where $H\in\mathbb{R}^{f\times n}$ is the feature matrix for each embedding
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="Graph-Attention-Block">Graph Attention Block<a class="anchor-link" href="#Graph-Attention-Block">&#182;</a></h2><p>The graph attention block is shown in the following figure,</p>
 <center><img src="https://pic4.zhimg.com/v2-526634b065899482bbe9811af105ab73_b.jpg" style="zoom:.8"></center>
-<h3 id="The-formula-for-graph-attention">The formula for graph attention<a class="anchor-link" href="#The-formula-for-graph-attention">&#182;</a></h3>$$
-A_{ij}=softmax(\sigma(W^{\top}[h_i||h_j]))
-$$<p>where $W\in\mathbb{R}^{f\times 1}$ is the weight, $h_i\in \mathbb{R}^{f}$ is the feature of the $i^{th}$ node  and $\sigma$ represents for activation function.</p>
+<ul>
+<li><p>The formula for graph attention</p>
+<p>$$
+  A_{ij}=softmax(\sigma(W^{\top}[h_i||h_j]))
+  $$</p>
+<p>where $W\in\mathbb{R}^{f\times 1}$ is the weight, $h_i\in \mathbb{R}^{f}$ is the feature of the $i^{th}$ node  and $\sigma$ represents for activation function.</p>
+</li>
+</ul>
 
 </div>
 </div>
