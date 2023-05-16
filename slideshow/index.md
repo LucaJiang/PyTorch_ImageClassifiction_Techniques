@@ -143,10 +143,10 @@ Or more commonly used: TensorBoard
 <!-- <center class="half">
     <img src="../img/cifar10train_loss.png" width="400"/><img src="../img/cifar10val_loss.png" width="200"/><img src="../img/cifar10test_acc.png" width="200"/>
 </center> -->
-
-![train_loss](../img/cifar10train_loss.png)
+![cifar10result](../img/cifar10resnet34result.png)
+<!-- ![train_loss](../img/cifar10train_loss.png)
 ![val_loss](../img/cifar10val_loss.png)
-![test_acc](../img/cifar10test_acc.png)
+![test_acc](../img/cifar10test_acc.png) -->
 <!-- jiangwx end -->
 
 --------------------
