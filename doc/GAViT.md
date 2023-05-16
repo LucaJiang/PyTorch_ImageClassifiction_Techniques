@@ -1,6 +1,6 @@
 # Graph Attention ViT
 
-In pratice, since transformer becomes more and more popular, many companies and researchers want to add attention block to their model to improve performance. However, training an attention related model is computation consuming and not easy. One solution is that, fix weight of pretrained model and only train the attention block. 
+In pratice, since transformer becomes more and more popular, many companies and researchers want to add attention block to their model to improve performance. However, training an attention related model is computation consuming and not easy. One solution is that, froze pretrained model and only train the attention block. 
 
 In this project, we add the attention block to the resnet18. Instead of using traditional attention block, we use graph attention block to extract the features from image patches. And we also follow the ViT structure to utilize the attention block.
 
@@ -8,13 +8,13 @@ In this project, we add the attention block to the resnet18. Instead of using tr
 
 # The basis of attention
 
-This part is about math of attention mechanism. Since it's quite popular, I think most of you have already known it. So let's just skip this part.
+This part is about math of attention mechanism. Since it's quite popular, I think most of you have already known it. So let's skip this part.
 
 -----------------
 
 ## Graph Attention Block
 
-Actually, the graph attention is quite simple. It just use the linear transformation and an activation function like MLP and finally use softmax to normalize the attention.
+Actually, the graph attention is quite simple. It just use the linear transformation and activation function like MLP does and finally use softmax to normalize the attention.
 
 The formula is shown here:
 
@@ -56,14 +56,14 @@ Comparing to the traditional attention, the graph attention uses outer addition 
 ## Conv2d Embedding
 
 In order to use the graph attention, we should convert patches into feature vectors of nodes in the graph.
-In this project, we use covlution to convert instead of flatten. The implementation is simple.
+In this project, we use convolution to convert instead of flatten. The implementation is simple.
 Just like this.
 
 ```python
 nn.Conv2d(chans,feats,kernel_size=patch_size,stride=patch_size)
 ```
 
-Set the `kernel_size` and `stride_size` equal to `patch_size`.
+Just set the `kernel_size` and `stride_size` equal to `patch_size` to get feature vector of each patch.
 
 -----------------
 

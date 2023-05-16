@@ -47,7 +47,7 @@ The graph attention block is shown in the following figure,
 ### The formula for graph attention
 
 $$
-\alpha_{ij}=softmax(\sigma(W^{\top}[h_i||h_j]))
+A_{ij}=softmax(\sigma(W^{\top}[h_i||h_j]))
 $$
 
 where $W\in\mathbb{R}^{f\times 1}$ is the weight, $h_i\in \mathbb{R}^{f}$ is the feature of the $i^{th}$ node  and $\sigma$ represents for activation function.
