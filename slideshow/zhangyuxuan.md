@@ -18,7 +18,7 @@ Data augmentation for image classification can help improve the performance of a
 Diffusion models are inspired by non-equilibrium thermodynamics. They define a Markov chain of diffusion steps to slowly add random noise to data and then learn to reverse the diffusion process to construct desired data samples from the noise.
 
 <div style="width: 50%; margin: auto; position: relative;">
-  <img src="../img/Diffusion_Model.png" alt="Alt Text" style="width: 100%; height: auto; position: absolute; top: 0; left: 0;">
+  <img src="../img/Diffusion_Model.png" alt="Alt Text" style="width: 30%; height: auto; position: absolute; top: 0; left: 0;">
 </div>
 
 ![Diffusion_Model](../img/Diffusion_Model.png)
