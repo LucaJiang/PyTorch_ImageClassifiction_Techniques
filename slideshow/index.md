@@ -1,22 +1,23 @@
 <!-- title page -->
-# A survey on deep learning image classification technics based on PyTorch and PyTorch lightning
+## A survey on deep learning image classification technics based on PyTorch and PyTorch lightning
 
 Zhang Yuxuan, Jiang Wenxin, Fan Yifei, Zhang Juntao <small>(In order of speakers)</small>
 
 --------------------
-# Contents
+## Contents
 
 --------------------
-# Data Augmentation: Image Generation
+## Data Augmentation: Image Generation
 
 * Increasing model's ability to generalize to new and unseen data.
 * Help the model learn more robust and invariant features.
 
-<img src="../img/Generation_Networks.png" alt="Alt Text" style="width: 450px; height: 300px;">
+<center><img src="../img/Generation_Networks.png" style="zoom:.4"></center>
 
 --------------------
 ### ACGAN
-<img src="../img/ACGAN.png" alt="Alt Text" style="position: absolute; top: 50%; left: 50%; width: 450px; height: 200px;">
+
+<center><img src="../img/ACGAN.png" style="zoom:1.2"></center>
 
 --------------------
 ### Diffusion Model
@@ -46,18 +47,19 @@ $$
 * loss
 
 $$
-L_t^{\text {simple }} = \mathbb{E}_ {t \sim \[1,T\] , \mathbf{x}_ {0}, \boldsymbol{\epsilon}_ {t}} \left[||\boldsymbol{\epsilon}_ t-\boldsymbol{\epsilon}_ \theta\left(\sqrt{\bar{\alpha}_ t} \mathbf{x}_ 0+\sqrt{1-\bar{\alpha}_ t} \boldsymbol{\epsilon}_ t, t\right)||^2 \right]
+L_t^{\text {simple }} = \mathbb{E}_ {t \sim [1,T] , \mathbf{x}_ {0}, \boldsymbol{\epsilon}_ {t}} \left[||\boldsymbol{\epsilon}_ t-\boldsymbol{\epsilon}_ \theta\left(\sqrt{\bar{\alpha}_ t} \mathbf{x}_ 0+\sqrt{1-\bar{\alpha}_ t} \boldsymbol{\epsilon}_ t, t\right)||^2 \right]
 $$
 
 
 --------------------
 ### Generated Dataset
-<img src="../img/animation.gif" alt="Alt Text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+
+<center><img src="../img/animation.gif" style="zoom:1.5"></center>
 
 
 --------------------
 <!-- Jiang Wenxin begin -->
-# Training and Tuning with Tricks for CIFAR-10 dataset in PyTorch and PyTorch Lightning
+## Training and Tuning with Tricks for CIFAR-10 dataset in PyTorch and PyTorch Lightning
 
 Jiang Wenxin
 

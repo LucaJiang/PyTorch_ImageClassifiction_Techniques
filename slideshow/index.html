@@ -14660,7 +14660,7 @@ div.jp-OutputPrompt {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <!-- title page -->
-<h1 id="A-survey-on-deep-learning-image-classification-technics-based-on-PyTorch-and-PyTorch-lightning">A survey on deep learning image classification technics based on PyTorch and PyTorch lightning<a class="anchor-link" href="#A-survey-on-deep-learning-image-classification-technics-based-on-PyTorch-and-PyTorch-lightning">&#182;</a></h1><p>Zhang Yuxuan, Jiang Wenxin, Fan Yifei, Zhang Juntao <small>(In order of speakers)</small></p>
+<h2 id="A-survey-on-deep-learning-image-classification-technics-based-on-PyTorch-and-PyTorch-lightning">A survey on deep learning image classification technics based on PyTorch and PyTorch lightning<a class="anchor-link" href="#A-survey-on-deep-learning-image-classification-technics-based-on-PyTorch-and-PyTorch-lightning">&#182;</a></h2><p>Zhang Yuxuan, Jiang Wenxin, Fan Yifei, Zhang Juntao <small>(In order of speakers)</small></p>
 
 </div>
 </div>
@@ -14672,7 +14672,79 @@ div.jp-OutputPrompt {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h1 id="Contents">Contents<a class="anchor-link" href="#Contents">&#182;</a></h1>
+<h2 id="Contents">Contents<a class="anchor-link" href="#Contents">&#182;</a></h2>
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Data-Augmentation:-Image-Generation">Data Augmentation: Image Generation<a class="anchor-link" href="#Data-Augmentation:-Image-Generation">&#182;</a></h2><ul>
+<li>Increasing model's ability to generalize to new and unseen data.</li>
+<li>Help the model learn more robust and invariant features.</li>
+</ul>
+<center><img src="../img/Generation_Networks.png" style="zoom:.4"></center>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="ACGAN">ACGAN<a class="anchor-link" href="#ACGAN">&#182;</a></h3><center><img src="../img/ACGAN.png" style="zoom:1.2"></center>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Diffusion-Model">Diffusion Model<a class="anchor-link" href="#Diffusion-Model">&#182;</a></h3><ul>
+<li>Foward process</li>
+</ul>
+$$
+q\left(x_t \mid x_{t-1}\right)=\mathcal{N}\left(x_t ; \sqrt{1-\beta_t} x_{t-1}, \beta_t \mathbf{I}\right)
+$$$$
+q\left(x_{1: T} \mid 
+x_0\right)=\prod_{t=1}^T q\left(x_t \mid x_{t-1}\right)
+$$<ul>
+<li>Reverse process</li>
+</ul>
+$$
+p_\theta\left(x_{0: T}\right)=p\left(x_T\right) \prod_{t=1}^T p_\theta\left(x_{t-1} \mid x_t\right)
+$$$$
+p_\theta\left(x_{t-1} \mid 
+x_t\right)=\mathcal{N}\left(x_{t-1} ; \mu_\theta\left(x_t, t\right), \Sigma_\theta\left(x_t, t\right)\right)
+$$<ul>
+<li>loss</li>
+</ul>
+$$
+L_t^{\text {simple }} = \mathbb{E}_ {t \sim [1,T] , \mathbf{x}_ {0}, \boldsymbol{\epsilon}_ {t}} \left[||\boldsymbol{\epsilon}_ t-\boldsymbol{\epsilon}_ \theta\left(\sqrt{\bar{\alpha}_ t} \mathbf{x}_ 0+\sqrt{1-\bar{\alpha}_ t} \boldsymbol{\epsilon}_ t, t\right)||^2 \right]
+$$
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Generated-Dataset">Generated Dataset<a class="anchor-link" href="#Generated-Dataset">&#182;</a></h3><center><img src="../img/animation.gif" style="zoom:1.5"></center>
+
 </div>
 </div>
 </div>
@@ -14684,7 +14756,7 @@ div.jp-OutputPrompt {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <!-- Jiang Wenxin begin -->
-<h1 id="Training-and-Tuning-with-Tricks-for-CIFAR-10-dataset-in-PyTorch-and-PyTorch-Lightning">Training and Tuning with Tricks for CIFAR-10 dataset in PyTorch and PyTorch Lightning<a class="anchor-link" href="#Training-and-Tuning-with-Tricks-for-CIFAR-10-dataset-in-PyTorch-and-PyTorch-Lightning">&#182;</a></h1><p>Jiang Wenxin</p>
+<h2 id="Training-and-Tuning-with-Tricks-for-CIFAR-10-dataset-in-PyTorch-and-PyTorch-Lightning">Training and Tuning with Tricks for CIFAR-10 dataset in PyTorch and PyTorch Lightning<a class="anchor-link" href="#Training-and-Tuning-with-Tricks-for-CIFAR-10-dataset-in-PyTorch-and-PyTorch-Lightning">&#182;</a></h2><p>Jiang Wenxin</p>
 
 </div>
 </div>
@@ -14745,42 +14817,6 @@ div.jp-OutputPrompt {
 <li>Optimizer: SGD(Stochastic Gradient Descent) or Adam(Adaptive Moment Estimation)</li>
 <li>Hyperparameters: Learning Rate, Batch Size, Schedule, etc.</li>
 </ul>
-
-</div>
-</div>
-</div>
-</div></section></section><section ><section >
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h3 id="Data-Augmentation:-Image-Generation">Data Augmentation: Image Generation<a class="anchor-link" href="#Data-Augmentation:-Image-Generation">&#182;</a></h3><p>Data augmentation for image classification can help improve the performance of a machine learning model by increasing its ability to generalize to new and unseen data and can also help the model learn more robust and invariant features that are less sensitive to variations in lighting, orientation, and other factors.</p>
-<p><img src="../img/Generation_Networks.png" alt="Alt Text" style="width: 550px; height: 400px;"><img src="../img/Fake.png" alt="Alt Text" style="width: 400px; height: 400px;"></p>
-
-</div>
-</div>
-</div>
-</div></section></section><section ><section >
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h3 id="Diffusion-Moedel">Diffusion Moedel<a class="anchor-link" href="#Diffusion-Moedel">&#182;</a></h3><p>Diffusion Models define a Markov chain of diffusion steps to slowly add random noise to data and then learn to reverse the diffusion process to construct desired data samples from the noise.</p>
-<ul>
-<li>Foward process</li>
-</ul>
-$$
-q\left(x_t \mid x_{t-1}\right)=\mathcal{N}\left(x_t ; \sqrt{1-\beta_t} x_{t-1}, \beta_t \mathbf{I}\right) \quad q\left(x_{1: T} \mid x_0\right)=\prod_{t=1}^T q\left(x_t \mid x_{t-1}\right)
-$$<ul>
-<li>Reverse process</li>
-</ul>
-$$
-p_\theta\left(x_{0: T}\right)=p\left(x_T\right) \prod_{t=1}^T p_\theta\left(x_{t-1} \mid x_t\right) \quad p_\theta\left(x_{t-1} \mid x_t\right)=\mathcal{N}\left(x_{t-1} ; \mu_\theta\left(x_t, t\right), \Sigma_\theta\left(x_t, t\right)\right)
-$$<p><img src="../img/Diffusion_Model.png" alt="Alt Text" style="width: 550px; height: 400px;"><img src="../img/animation.gif" alt="Alt Text" style="width: 400px; height: 400px;"></p>
 
 </div>
 </div>

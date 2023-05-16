@@ -69,7 +69,7 @@ Just set the `kernel_size` and `stride_size` equal to `patch_size` to get featur
 
 ## Experiment
 
-Then we carry out the experiment. We use the resnet18 as the backbone and add graph attention. We use the cifar10 dataset to train the model.
+In experiment. We use the resnet18 as backbone and add graph attention. We use the cifar10 dataset to train the model.
 
 | Model                     | Pretrained | Attention | Epoch Consuming | Test Accuracy |
 |:-------------------------:|:----------:|:---------:|:---------------:|:-------------:|
@@ -78,7 +78,7 @@ Then we carry out the experiment. We use the resnet18 as the backbone and add gr
 | Resnet18 \|> GraphAtten   | ✔️         | ✔️        | 5               | **0.935**     |
 | Resnet18 \|> ClassicAtten | ✔️         | ✔️        | 5               | 0.931         |
 
-From the table, we can see test accuracy of resnet18  is about 92.6%. When we add attention and train the whole model from the beginning, unfortunately, test accuracy decreases. However, when we use pretrained resnet18 and only train the attention block, test accuracy increases to 93.5%.
+From the table, we can see test accuracy of resnet18 is about 92.6%. When we add attention and train the whole model from the beginning, unfortunately, test accuracy decreases. However, when we use pretrained resnet18 and only train the attention block, test accuracy increases to 93.5%.
 
 And we also compare the graph attention block with the traditional attention block. Test accuracy of graph attention is little higher than classical attention. 
 
