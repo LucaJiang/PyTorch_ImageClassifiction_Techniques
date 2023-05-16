@@ -2,7 +2,7 @@
 
 First, we can see it's easy to convert the pytorch code in the left panel to the lightning code in the right panel.
 
-Second, it's easier to customize the training process with Trainer and Callbacks modules. You can just add the techniques you want. This allows us to focus on the scientific details.
+Second, it's easier to customize the training process with Trainer and Callbacks modules. You can just add the techniques you want.
 
 Besides, Lightning includes features such as multi-GPU training and distributed training if we want to use a larger dataset or more complex model.
 
