@@ -1,78 +1,47 @@
 --------------------
-##  Datasets and models
-
-* Dataset: [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html)
-* Model: ResNet18 or ResNet34 from [TorchVision.Models](https://pytorch.org/vision/0.8/models.html)
-* Loss Function: NLL(Negative Log-Likelihood)
-* Optimizer: SGD(Stochastic Gradient Descent) or Adam(Adaptive Moment Estimation)
-* Hyperparameters: Learning Rate, Batch Size, Schedule, etc.
-
---------------------
 ### Data Augmentation: Image Generation
 
-Data augmentation for image classification can help improve the performance of a machine learning model by increasing its ability to generalize to new and unseen data and can also help the model learn more robust and invariant features that are less sensitive to variations in lighting, orientation, and other factors.
+* Increasing model's ability to generalize to new and unseen data.
+* Help the model learn more robust and invariant features.
 
-<img src="../img/Generation_Networks.png" alt="Alt Text" style="width: 550px; height: 400px;"><img src="../img/Fake.png" alt="Alt Text" style="width: 400px; height: 400px;">
+<img src="../img/Generation_Networks.png" alt="Alt Text" style="width: 450px; height: 300px;">
 
 --------------------
-### Diffusion Moedel
+### ACGAN
+<img src="../img/ACGAN.png" alt="Alt Text" style="position: absolute; top: 50%; left: 50%; width: 450px; height: 200px;">
 
-Diffusion Models define a Markov chain of diffusion steps to slowly add random noise to data and then learn to reverse the diffusion process to construct desired data samples from the noise.
+--------------------
+### Diffusion Model
+
 * Foward process 
 
 $$
-q\left(x_t \mid x_{t-1}\right)=\mathcal{N}\left(x_t ; \sqrt{1-\beta_t} x_{t-1}, \beta_t \mathbf{I}\right) \quad q\left(x_{1: T} \mid x_0\right)=\prod_{t=1}^T q\left(x_t \mid x_{t-1}\right)
+q\left(x_t \mid x_{t-1}\right)=\mathcal{N}\left(x_t ; \sqrt{1-\beta_t} x_{t-1}, \beta_t \mathbf{I}\right)
+$$
+
+$$
+q\left(x_{1: T} \mid 
+x_0\right)=\prod_{t=1}^T q\left(x_t \mid x_{t-1}\right)
 $$
 
 * Reverse process 
 
 $$
-p_\theta\left(x_{0: T}\right)=p\left(x_T\right) \prod_{t=1}^T p_\theta\left(x_{t-1} \mid x_t\right) \quad p_\theta\left(x_{t-1} \mid x_t\right)=\mathcal{N}\left(x_{t-1} ; \mu_\theta\left(x_t, t\right), \Sigma_\theta\left(x_t, t\right)\right)
+p_\theta\left(x_{0: T}\right)=p\left(x_T\right) \prod_{t=1}^T p_\theta\left(x_{t-1} \mid x_t\right)
 $$
 
-<img src="../img/Diffusion_Model.png" alt="Alt Text" style="width: 550px; height: 400px;"><img src="../img/animation.gif" alt="Alt Text" style="width: 400px; height: 400px;">
+$$
+p_\theta\left(x_{t-1} \mid 
+x_t\right)=\mathcal{N}\left(x_{t-1} ; \mu_\theta\left(x_t, t\right), \Sigma_\theta\left(x_t, t\right)\right)
+$$
+
+* loss
+
+$$
+L_t^{\text {simple }} = \mathbb{E}_ {t \sim \[1,T\] , \mathbf{x}_ {0}, \boldsymbol{\epsilon}_ {t}} \left[||\boldsymbol{\epsilon}_ t-\boldsymbol{\epsilon}_ \theta\left(\sqrt{\bar{\alpha}_ t} \mathbf{x}_ 0+\sqrt{1-\bar{\alpha}_ t} \boldsymbol{\epsilon}_ t, t\right)||^2 \right]
+$$
 
 
 --------------------
-### Data Augmentation: Image Transformation
-Tools: random crop, random flip, random rotation, etc.
-Benefits of data augmentation:
-* Increase the size of the dataset -> Reduce **overfitting**
-* Improve **generalization** -> Improve the performance of the model
-* Increase at least **3%** accuracy in CIFA-10[^21]
-![data_aug](../img/data_augmentation.png)
-[^21]:Shorten C, Khoshgoftaar T M. A survey on image data augmentation for deep learning[J]. Journal of big data, 2019, 6(1): 1-48.
---------------------
-### Data Augmentation: Data Normalization and Resizing
-Tools: Normalize, Resize, etc.
-Why data normalization?
-* Easier to converge
-* Prevent gradient explosion / vanish
-* Make features have the same scale
-  
-Why data resizing?
-* Reduce the size of the img -> Save time
-* Fit the size of input layer
---------------------
-### Transfer Learning
-* Use the pretrained model to initialize the weights of the model
-```python
-model = torchvision.models.resnet18(pretrained=True)
-```
-Useful when dataset is small.
-
-### Replicability and Determinism
-```python
-# for hardware
-torch.backends.cudnn.deterministic = True
-torch.backends.cudnn.benchmark = False
-# for numpy/pytorch package
-seed_everything(42)
-```
---------------------
-### Tricks: Learning Rate Finder
-<small>(But it sometimes doesn't work well.)</small>
-Not to pick the lowest loss, but in the middle of the sharpest downward slope (red point).
-![FindLR](../img/pl_lr_finder.png)
-<!-- It determines a range of learning rates by gradually increasing the learning rate during training and observing the change in the loss function, thus helping us to better select the learning rate to improve the training effect and convergence speed of the model. -->
-
+### Generated Dataset
+<img src="../img/animation.gif" alt="Alt Text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
