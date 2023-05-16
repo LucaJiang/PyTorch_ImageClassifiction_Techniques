@@ -6,7 +6,7 @@ author1,author2,author3,author4
 
 # Graph Attention ViT
 
-In pratice, since the transformer becomes more and more popular, many companies and researchers want to add **attention** block to their existed model in order to improve the performance. However, training a attention related model is computation consuming and not easy.
+In pratice, since the transformer becomes more and more popular, many companies and researchers want to add **attention** block to their existed model in order to improve the performance. However, training an attention related model is computation consuming and not easy.
 
 In this project, we add the attention block to the resnet18 model. And we follow the ViT structure to utilize the attention block.
 
