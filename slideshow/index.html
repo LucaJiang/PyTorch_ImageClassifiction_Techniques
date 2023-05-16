@@ -14659,7 +14659,332 @@ div.jp-OutputPrompt {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h1 id="Title">Title<a class="anchor-link" href="#Title">&#182;</a></h1><p>author1,author2,author3,author4</p>
+<!-- title page -->
+<h1 id="A-survey-on-deep-learning-image-classification-technics-based-on-PyTorch-and-PyTorch-lightning">A survey on deep learning image classification technics based on PyTorch and PyTorch lightning<a class="anchor-link" href="#A-survey-on-deep-learning-image-classification-technics-based-on-PyTorch-and-PyTorch-lightning">&#182;</a></h1><p>Zhang Yuxuan, Jiang Wenxin, Fan Yifei, Zhang Juntao <small>(In order of speakers)</small></p>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<ul>
+<li><a href="#a-survey-on-deep-learning-image-classification-technics-based-on-pytorch-and-pytorch-lightning">A survey on deep learning image classification technics based on PyTorch and PyTorch lightning</a></li>
+<li><a href="#training-and-tuning-with-tricks-for-cifar-10-dataset-in-pytorch-and-pytorch-lightning">Training and Tuning with Tricks for CIFAR-10 dataset in PyTorch and PyTorch Lightning</a><ul>
+<li><a href="#datasets-and-models">Datasets and models</a><ul>
+<li><a href="#transforms-data-augmentation">Transforms: Data Augmentation</a></li>
+</ul>
+</li>
+<li><a href="#21shorten-c-khoshgoftaar-t-m-a-survey-on-image-data-augmentation-for-deep-learningj-journal-of-big-data-2019-61-1-48">[^21]:Shorten C, Khoshgoftaar T M. A survey on image data augmentation for deep learning[J]. Journal of big data, 2019, 6(1): 1-48.</a><ul>
+<li><a href="#transforms-data-normalization-and-resizing">Transforms: Data Normalization and Resizing</a></li>
+<li><a href="#transfer-learning">Transfer Learning</a></li>
+<li><a href="#replicability-and-determinism">Replicability and Determinism</a></li>
+<li><a href="#tricks-learning-rate-finder">Tricks: Learning Rate Finder</a></li>
+</ul>
+</li>
+<li><a href="#effective-training-techniques">Effective Training Techniques</a></li>
+<li><a href="#results">Results</a></li>
+</ul>
+</li>
+<li><a href="#graph-attention-vit">Graph Attention ViT</a><ul>
+<li><a href="#the-basis-of-attention">The basis of attention</a><ul>
+<li><a href="#the-general-form-for-the-self-attention">The general form for the self-attention</a></li>
+<li><a href="#the-classical-self-attention">The classical self-attention</a></li>
+</ul>
+</li>
+<li><a href="#graph-attention-block">Graph Attention Block</a><ul>
+<li><a href="#the-formula-for-graph-attention">The formula for graph attention</a></li>
+</ul>
+</li>
+<li><a href="#graph-attention-block-1">Graph Attention Block</a></li>
+<li><a href="#conv2d-embedding">Conv2d Embedding</a></li>
+<li><a href="#experiment">Experiment</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+<li><a href="#thanks-for-your-listening">Thanks for your listening!</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<!-- Jiang Wenxin begin -->
+<h1 id="Training-and-Tuning-with-Tricks-for-CIFAR-10-dataset-in-PyTorch-and-PyTorch-Lightning">Training and Tuning with Tricks for CIFAR-10 dataset in PyTorch and PyTorch Lightning<a class="anchor-link" href="#Training-and-Tuning-with-Tricks-for-CIFAR-10-dataset-in-PyTorch-and-PyTorch-Lightning">&#182;</a></h1><p>Jiang Wenxin</p>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<ul>
+<li>Easy convert</li>
+</ul>
+<p><img src="../img/pt_to_pl.png" alt="PyTorch to PyTorch Lightning" /></p>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<ul>
+<li>Less code, more efficient.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">ModelCheckpoint</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_acc&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">),</span>
+    <span class="n">LearningRateMonitor</span><span class="p">(</span><span class="n">logging_interval</span><span class="o">=</span><span class="s2">&quot;step&quot;</span><span class="p">),</span>
+    <span class="n">StochasticWeightAveraging</span><span class="p">(</span><span class="n">swa_lrs</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">),</span>
+    <span class="n">early_stopping</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">Trainer</span><span class="p">(</span>
+    <span class="n">max_epochs</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">devices</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="c1"># auto choose GPU or CPU</span>
+    <span class="n">logger</span><span class="o">=</span><span class="n">wandb_logger</span><span class="p">,</span>
+    <span class="n">callbacks</span><span class="o">=</span><span class="n">callbacks</span><span class="p">,</span> <span class="c1"># defined above</span>
+<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Datasets-and-models">Datasets and models<a class="anchor-link" href="#Datasets-and-models">&#182;</a></h2><ul>
+<li>Dataset: <a href="https://www.cs.toronto.edu/~kriz/cifar.html">CIFAR-10</a></li>
+<li>Model: ResNet18 or ResNet34 from <a href="https://pytorch.org/vision/0.8/models.html">TorchVision.Models</a></li>
+<li>Loss Function: NLL(Negative Log-Likelihood)</li>
+<li>Optimizer: SGD(Stochastic Gradient Descent) or Adam(Adaptive Moment Estimation)</li>
+<li>Hyperparameters: Learning Rate, Batch Size, Schedule, etc.</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Transforms:-Data-Augmentation">Transforms: Data Augmentation<a class="anchor-link" href="#Transforms:-Data-Augmentation">&#182;</a></h3><p>Tools: random crop, random flip, random rotation, etc.
+Benefits of data augmentation:</p>
+<ul>
+<li>Increase the size of the dataset -&gt; Reduce <strong>overfitting</strong></li>
+<li>Improve <strong>generalization</strong> -&gt; Improve the performance of the model</li>
+<li>Increase at least <strong>3%</strong> accuracy in CIFA-10[^21]</li>
+</ul>
+<p><img src="../img/data_augmentation.png" alt="data_aug" />
+[^21]:Shorten C, Khoshgoftaar T M. A survey on image data augmentation for deep learning[J]. Journal of big data, 2019, 6(1): 1-48.</p>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Transforms:-Data-Normalization-and-Resizing">Transforms: Data Normalization and Resizing<a class="anchor-link" href="#Transforms:-Data-Normalization-and-Resizing">&#182;</a></h3><p>Tools: Normalize, Resize, etc.
+Why data normalization?</p>
+<ul>
+<li>Easier to converge</li>
+<li>Prevent gradient explosion / vanish</li>
+<li>Make features have the same scale</li>
+</ul>
+<p>Why data resizing?</p>
+<ul>
+<li>Reduce the size of the img -&gt; Save time</li>
+<li>Fit the size of input layer</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Transfer-Learning">Transfer Learning<a class="anchor-link" href="#Transfer-Learning">&#182;</a></h3><ul>
+<li>Use the pretrained model to initialize the weights of the model</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">resnet18</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+<p>Useful when dataset is small.</p>
+<h3 id="Replicability-and-Determinism">Replicability and Determinism<a class="anchor-link" href="#Replicability-and-Determinism">&#182;</a></h3><div class="highlight"><pre><span></span><span class="c1"># for hardware</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">deterministic</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">benchmark</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># for numpy/pytorch package</span>
+<span class="n">seed_everything</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Tricks:-Learning-Rate-Finder">Tricks: Learning Rate Finder<a class="anchor-link" href="#Tricks:-Learning-Rate-Finder">&#182;</a></h3><p><small>(But it sometimes doesn't work well.)</small>
+Not to pick the lowest loss, but in the middle of the sharpest downward slope (red point).
+<img src="../img/pl_lr_finder.png" alt="FindLR" /></p>
+<!-- It determines a range of learning rates by gradually increasing the learning rate during training and observing the change in the loss function, thus helping us to better select the learning rate to improve the training effect and convergence speed of the model. -->
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Effective-Training-Techniques"><a href="https://lightning.ai/docs/pytorch/stable/advanced/training_tricks.html">Effective Training Techniques</a><a class="anchor-link" href="#Effective-Training-Techniques">&#182;</a></h2><div class="highlight"><pre><span></span><span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">LearningRateMonitor</span><span class="p">(</span><span class="n">logging_interval</span><span class="o">=</span><span class="s2">&quot;step&quot;</span><span class="p">),</span>
+    <span class="n">StochasticWeightAveraging</span><span class="p">(</span><span class="n">swa_lrs</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">),</span>
+    <span class="n">GradientAccumulationScheduler</span><span class="p">(</span><span class="n">scheduling</span><span class="o">=</span><span class="p">{</span><span class="o">...</span><span class="p">}),</span>
+    <span class="n">early_stopping</span>
+<span class="p">]</span>
+
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">Trainer</span><span class="p">(</span>
+    <span class="n">gradient_clip_val</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">devices</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>  <span class="c1"># default</span>
+    <span class="n">logger</span><span class="o">=</span><span class="n">wandb_logger</span><span class="p">,</span><span class="o">...</span>
+<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<ul>
+<li><strong>Accumulate Gradients:</strong></li>
+</ul>
+<p>Accumulated gradients run K small batches of size N before doing a backward pass, resulting a KxN effective batch size.
+<img src="../img/AccumulateGradients.webp" alt="Accumulate Gradients" />
+Control batch size, improve the stability and generalisation of the model</p>
+<!-- Increasing the batch size without increasing the memory overhead. Also, the gradient accumulation technique can help us reduce the variance of gradient descent and improve the stability and generalisation of the model. -->
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<ul>
+<li><strong>Early Stopping:</strong></li>
+</ul>
+<p>Stop at the best epoch, not the last epoch.
+Avoid over-fitting.</p>
+<ul>
+<li><strong>Gradient Clipping:</strong></li>
+</ul>
+<p>Gradient clipping can be enabled to <strong>avoid exploding gradients</strong>.</p>
+<ul>
+<li><strong>Stochastic Weight Averaging:</strong></li>
+</ul>
+<p>Smooths the loss landscape thus making it harder to end up in a local minimum during optimization. Improves generalization.</p>
+<ul>
+<li><strong>Learning Rate Scheduler:</strong></li>
+</ul>
+<p>Control learning rate. Make the model converge faster.</p>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<ul>
+<li><strong>Manage Experiment:</strong> Weights and Biases: <a href="https://wandb.ai/site">WandB</a></li>
+</ul>
+<p>Before training:
+<img src="../img/wandb_login.png" alt="WandB_login" />
+After training:
+<img src="../img/wandb_summary.png" alt="WandB_summary" /></p>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<ul>
+<li><strong>Manage Experiment:</strong> Weights and Biases: <a href="https://wandb.ai/site">WandB</a></li>
+</ul>
+<p>Dashboard:
+<img src="../img/wandb_dashboard.png" alt="WandB_dashboard" />
+Or more commonly used: TensorBoard</p>
+
+</div>
+</div>
+</div>
+</div></section></section><section ><section >
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Results">Results<a class="anchor-link" href="#Results">&#182;</a></h2><center class="half">
+    <img src="../img/cifar10train_loss.png" width="400"/><img src="../img/cifar10val_loss.png" width="200"/><img src="../img/cifar10test_acc.png" width="200"/>
+</center>
+<!-- ![train_loss](../img/cifar10train_loss.png)
+![val_loss](../img/cifar10val_loss.png)
+![test_acc](../img/cifar10test_acc.png) -->
+<!-- jiangwx end -->
 
 </div>
 </div>
