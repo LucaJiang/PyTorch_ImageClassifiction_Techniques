@@ -1,22 +1,12 @@
 # PyTorch_ImageClassifiction_Techniques
-
-For MSDM5055: A survey on deep learning image classification technics based on PyTorch and PyTorch lightning
+A survey on deep learning image classification technics based on PyTorch and PyTorch lightning
 [Slices URL](https://lucajiang.github.io/PyTorch_ImageClassifiction_Techniques/slideshow/)
 
 - [PyTorch\_ImageClassifiction\_Techniques](#pytorch_imageclassifiction_techniques)
-  - [Slices contents:](#slices-contents)
   - [Introduction](#introduction)
   - [Features](#features)
   - [Run in Colab](#run-in-colab)
   - [Reference](#reference)
-
-
-## Slices contents:
-Done:
-...
-todo: 
-- [ ] Visualization
-- [ ] usage of colab and git: it's part of DL ability
 
 
 ## Introduction
@@ -33,7 +23,7 @@ This is a repository for the final project of MSDM5055 about applying image clas
     - [x] Batch Size Finder: tuner.scale_batch_size(model, mode="power")
     - [x] Learning Rate Finder: tuner.lr_find(model)
 - [x] Graph Attention Block
-- [x] Visualization
+- [x] Visualization with captum
 
 
 ## Run in Colab
@@ -44,7 +34,6 @@ This is a repository for the final project of MSDM5055 about applying image clas
 
 
 ## Reference
-Write down all your references here. 
 1. PyTorch Lightning: https://lightning.ai/docs/pytorch/stable/
 2. PyTorch Lightning CIFAR-10: https://lightning.ai/docs/pytorch/stable/notebooks/lightning_examples/cifar10-baseline.html
 3. Training tricks: https://lightning.ai/docs/pytorch/stable/advanced/training_tricks.html
