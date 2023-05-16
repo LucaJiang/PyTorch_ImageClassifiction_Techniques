@@ -33,7 +33,7 @@ This is a repository for the final project of MSDM5055 about applying image clas
     - [x] Batch Size Finder: tuner.scale_batch_size(model, mode="power")
     - [x] Learning Rate Finder: tuner.lr_find(model)
 - [x] Graph Attention Block
-- [ ] Visualization
+- [x] Visualization
 
 
 ## Run in Colab
@@ -51,3 +51,4 @@ Write down all your references here.
 4. Graph Attention: https://www.baeldung.com/cs/graph-attention-networks
 5. Diffusion Model:https://lilianweng.github.io/posts/2021-07-11-diffusion-models/#:~:text=Diffusion%20models%20are%20inspired%20by,data%20samples%20from%20the%20noise
 6. Cifar-10 Generation with Diffusion Model:https://github.com/zoubohao/DenoisingDiffusionProbabilityModel-ddpm-
+7. Axiomatic Attribution for Deep Networks:https://arxiv.org/pdf/1703.01365.pdf
